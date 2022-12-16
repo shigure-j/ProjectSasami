@@ -1,0 +1,37 @@
+{
+    "name": {
+        "type": "string",
+        "option": "",
+        "width": 10
+    },
+    "project": {
+        "type": "string",
+        "option": "",
+        "width": 10
+    },
+    "design": {
+        "type": "string",
+        "option": "",
+        "width": 10
+    },
+    "stage": {
+        "type": "string",
+        "option": "",
+        "width": 10
+    },
+    "path": {
+        "type": "string",
+        "option": "",
+        "width": 10
+    },
+    "start_time": {
+        "type": "datetime",
+        "option": "yyyy/MM/dd HH:mm",
+        "width": 10
+    },
+    "end_time": {
+        "type": "datetime",
+        "option": "yyyy/MM/dd HH:mm",
+        "width": 10
+    }
+}

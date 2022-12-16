@@ -1,0 +1,27 @@
+<%= form_with model: @work, data: {turbo_confirm: "Save?"} do |form| %>
+
+  <% [:name, :project, :design, :owner, :stage, :path].each do |input| %>
+    <div>
+      <%= form.label input %><br>
+      <%= form.text_field input %>
+    </div>
+  <% end %>
+
+  <% [:start_time, :end_time].each do |input| %>
+    <div>
+      <%= form.label input %><br>
+      <%= form.datetime_select input%>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :data %>
+    <%= form.file_field :data%>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<%= javascript_include_tag "common" %>

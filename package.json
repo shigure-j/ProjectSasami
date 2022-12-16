@@ -7,12 +7,18 @@
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.2",
-    "bootstrap-table": "^1.21.1",
+    "bootstrap-table": "^1.21.2",
+    "child_process": "^1.0.2",
+    "dragtable": "^2.0.12",
     "esbuild": "^0.16.2",
+    "fs": "^0.0.1-security",
+    "jquery": "^3.6.1",
+    "jquery-resizable-columns": "^0.2.3",
+    "jquery-ui": "^1.13.2",
     "sass": "^1.56.1"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets",
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds",
     "build:css": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules"
   }
 }

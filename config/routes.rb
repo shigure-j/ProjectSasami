@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root "dashboard#index"
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  get "sample", to: "dashboard#sample"
+  resources :stages, only: [:show]
+  resources :owners, only: [:show]
+  resources :projects, only: [:show]
+  resources :designs, only: [:show]
+  resources :works, only: [:new, :create, :show]
 end

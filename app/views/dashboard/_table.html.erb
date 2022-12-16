@@ -1,0 +1,65 @@
+<table  id="<%= table_id %>"
+  <% 'data-toggle="table"' %>
+      <% unless table_field.nil? %>
+        data-data-field="<%= table_field %>"
+      <% end %>
+      <% if table_data_type.eql?(:url) %>
+        data-url="<%= table_data %>"
+      <% elsif table_data_type.eql?(:ajax) %>
+        data-ajax="<%= table_data %>"
+      <% end %>
+        data-height="800"
+        data-cache="false"
+        data-filter-control="true"
+        data-resizable="true"
+        data-search="true"
+        data-advanced-search="true"
+        data-id-table="advancedTable"
+        data-show-columns="true"
+        data-show-columns-search="true"
+        data-show-columns-toggle-all="true"
+        data-reorderable-columns="true">
+  <thead>
+    <tr>
+      <% no = 0 %>
+      <% table_format.each do |index, format| %>
+        <% unless format[:formatter].nil? %>
+          <script> var <%= "cellFormatter#{table_id}#{no}" %> = <%= format[:formatter].html_safe %> </script>
+        <% end %>
+        <th 
+          id=<%= "#{table_id}#{no}" %>
+          data-sortable="true"
+          <% unless format[:formatter].nil? %>
+            data-formatter="<%= "cellFormatter#{table_id}#{no}" %>"
+          <% end %>
+          <% unless format[:width].nil? %>
+            data-width="<%= format[:width] %>" data-width-unit="%"
+          <% end %>
+          <% unless table_data_type.nil? %>
+            data-field="<%= index %>"
+          <% end %>
+          data-filter-control="select">
+        <%= index %></th>
+        <% no += 1 %>
+      <% end %>
+    </tr>
+  </thead>
+<% if table_data_type.nil? %>
+  <tbody>
+    <% table_data.each do |n_data| %>
+      <tr>
+        <% table_format.keys.map {|n_index| n_data[n_index]}.each do |n_value| %>
+          <% if n_value.class.superclass.eql?(ApplicationRecord) %>
+            <td><%= link_to n_value.name, n_value %></td>
+          <% else %>
+            <td><%= n_value %></td>
+          <% end %>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+<% end %>
+</table>
+<script>
+  $('#<%= table_id %>').bootstrapTable({onDblClickRow: setColAsGroup})
+</script>
