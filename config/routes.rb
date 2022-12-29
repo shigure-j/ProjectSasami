@@ -7,4 +7,7 @@ Rails.application.routes.draw do
   resources :projects, only: [:show]
   resources :designs, only: [:show]
   resources :works, only: [:new, :create, :show]
+  get "data", to: "works#data"
+  get "detail", to: "dashboard#detail"
+  get "summary", to: "dashboard#summary"
 end

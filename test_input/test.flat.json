@@ -1,0 +1,102 @@
+[
+    {
+        "key": "area",
+        "value": "224"
+    },
+    {
+        "key": "vpn",
+        "value": "8",
+        "scenario": "ffgnpbbb",
+        "type": "hold",
+        "pba": "gba",
+        "group": "B"
+    },
+    {
+        "key": "tns",
+        "value": "11",
+        "scenario": "ffgnpbbb",
+        "type": "hold",
+        "pba": "gba",
+        "group": "C"
+    },
+    {
+        "key": "wns",
+        "value": "2",
+        "scenario": "ffgnpaaa",
+        "type": "setup",
+        "pba": "gba",
+        "group": "A"
+    },
+    {
+        "key": "vpn",
+        "value": "55",
+        "scenario": "ssgnpaaa",
+        "type": "setup",
+        "pba": "gba",
+        "group": "A"
+    },
+    {
+        "key": "tns",
+        "value": "45",
+        "scenario": "ssgnpaaa",
+        "type": "setup",
+        "pba": "gba",
+        "group": "A"
+    },
+    {
+        "key": "wns",
+        "value": "52",
+        "scenario": "ssgnpaaa",
+        "type": "setup",
+        "pba": "gba",
+        "group": "A"
+    },
+    {
+        "key": "vpn",
+        "value": "63",
+        "scenario": "ffgnpaaa",
+        "type": "hold",
+        "pba": "pba",
+        "group": "A"
+    },
+    {
+        "key": "tns",
+        "value": "74",
+        "scenario": "ffgnpaaa",
+        "type": "hold",
+        "pba": "pba",
+        "group": "A"
+    },
+    {
+        "key": "wns",
+        "value": "106",
+        "scenario": "ffgnpaaa",
+        "type": "setup",
+        "pba": "pba",
+        "group": "A"
+    },
+    {
+        "key": "vpn",
+        "value": "96",
+        "scenario": "ssgnpbbb",
+        "type": "setup",
+        "pba": "pba",
+        "group": "A"
+    },
+    {
+        "key": "tns",
+        "value": "97",
+        "scenario": "ssgnpbbb",
+        "type": "setup",
+        "pba": "pba",
+        "group": "A"
+    },
+    {
+        "key": "wns",
+        "value": "91",
+        "scenario": "ssgnpaaa",
+        "type": "setup",
+        "pba": "pba",
+        "group": "A"
+    }
+]

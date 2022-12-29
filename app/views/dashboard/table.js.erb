@@ -1,0 +1,59 @@
+cellFormatter = function(type, opt) {
+  switch (type) {
+    case "int":
+      return function(value) {
+        return parseInt(value)
+      }
+    case "float":
+      return function(value) {
+        return parseFloat(value).toFixed(opt)
+      }
+    case "datetime":
+      return function(value) {
+        var dateObj = new Date(Date.parse(value))
+        return dateObj.format(opt)
+      }
+    case "string":
+      return function(value) {
+        return value
+      }
+    case "path":
+      return function(value) {
+        return '<button type="button" class="btn btn-secondary focus-popover" data-clipboard-action="copy" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" data-clipboard-text="' + value + '" data-bs-content="' + value + '"> copy </button>'
+      }
+    default:
+      return function(value) {
+        return value
+      }
+  }
+}
+
+<% no = 0 %>
+<% table_format.each do |index, format| %>
+  <% unless format[:formatter].nil? %>
+    <%= "cellFormatter#{table_id}#{no}" %> = <%= format[:formatter].html_safe %>
+  <% end %>
+  <% no += 1 %>
+<% end %>
+
+$table = $("#<%= table_id %>")
+var table_opt = <%= table_data.to_json.html_safe %>
+table_opt["height"] = window.innerHeight - 100
+$table.bootstrapTable("destroy")
+$table.bootstrapTable(table_opt)
+
+// Clipboard
+var clipboard = new ClipboardJS(".btn")
+clipboard.on('success', function(e) {
+  console.info('Action:', e.action);
+  console.info('Text:', e.text);
+  console.info('Trigger:', e.trigger);
+
+  e.clearSelection();
+});
+// Popover
+$('body').popover({
+  selector: '.focus-popover',
+  trigger: 'hover focus'
+});
+//

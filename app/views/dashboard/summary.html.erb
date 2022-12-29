@@ -1,0 +1,44 @@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWorks" aria-labelledby="offcanvasLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body" id="nav-table-div">
+  </div>
+</div>
+
+<div class="container-fluid d-flex flex-column vh-100">
+  <div class="row">
+    <%= render partial: "dashboard/nav" %>
+  </div>
+
+  <div class="row d-flex flex-fill">
+    <div class="col flex-grow-1">
+      <div class="row py-1">
+        <div class="col">
+          <button onclick="loadWork(0, 1)" type="button" class="btn btn-secondary">Show</button>
+        </div>
+        <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
+      </div>
+      <table  
+        id="dashboard_view"
+        data-advanced-search="true"
+        data-cache="false"
+        data-filter-control="true"
+        data-id-table="advancedTable"
+        data-reorderable-columns="true"
+        data-reorderable-rows="true"
+        data-resizable="true"
+        data-search="true"
+        data-show-columns-search="true"
+        data-show-columns-toggle-all="true"
+        data-show-columns="true"
+        data-use-row-attr-func="true"
+        data-click-to-select="true"
+        data-buttons-toolbar=".buttons-toolbar"
+        data-buttons-align="right"
+      >
+      </table>
+    </div>
+  </div>
+</div>

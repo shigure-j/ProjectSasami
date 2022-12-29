@@ -1,5 +1,5 @@
 <table  id="<%= table_id %>"
-  <% 'data-toggle="table"' %>
+      data-toggle="table"
       <% unless table_field.nil? %>
         data-data-field="<%= table_field %>"
       <% end %>
@@ -8,7 +8,10 @@
       <% elsif table_data_type.eql?(:ajax) %>
         data-ajax="<%= table_data %>"
       <% end %>
-        data-height="800"
+      <% if !table_select.nil? %>
+        data-click-to-select="true"
+      <% end %>
+      <%# data-height="800" %>
         data-cache="false"
         data-filter-control="true"
         data-resizable="true"
@@ -18,16 +21,20 @@
         data-show-columns="true"
         data-show-columns-search="true"
         data-show-columns-toggle-all="true"
+        data-reorderable-rows="true"
+        data-use-row-attr-func="true"
         data-reorderable-columns="true">
   <thead>
     <tr>
+      <% if !table_select.nil? %>
+        <th data-field="<%= table_select %>" data-checkbox="true"></th>
+      <% end %>
       <% no = 0 %>
       <% table_format.each do |index, format| %>
         <% unless format[:formatter].nil? %>
           <script> var <%= "cellFormatter#{table_id}#{no}" %> = <%= format[:formatter].html_safe %> </script>
         <% end %>
         <th 
-          id=<%= "#{table_id}#{no}" %>
           data-sortable="true"
           <% unless format[:formatter].nil? %>
             data-formatter="<%= "cellFormatter#{table_id}#{no}" %>"
@@ -48,6 +55,9 @@
   <tbody>
     <% table_data.each do |n_data| %>
       <tr>
+        <% if !table_select.nil? %>
+          <td <%= table_select %>="<%= n_data[table_select] %>"> <%= n_data[table_select] %> </td>
+        <% end %>
         <% table_format.keys.map {|n_index| n_data[n_index]}.each do |n_value| %>
           <% if n_value.class.superclass.eql?(ApplicationRecord) %>
             <td><%= link_to n_value.name, n_value %></td>
@@ -60,6 +70,6 @@
   </tbody>
 <% end %>
 </table>
-<script>
-  $('#<%= table_id %>').bootstrapTable({onDblClickRow: setColAsGroup})
-</script>
+<!--script>
+  $("#<%= table_id %>").bootstrapTable()
+</script-->

@@ -1,0 +1,66 @@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWorks" aria-labelledby="offcanvasLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body" id="nav-table-div">
+    <div class="row py-1">
+      <div class="col">
+        <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks" onclick="loadWork(0)" type="button" class="btn btn-secondary">Show</button>
+        <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks" onclick="loadWork(1)" type="button" class="btn btn-secondary">Add</button>
+      </div>
+      <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
+    </div>
+    <table  
+      id="dashboard_view"
+      data-advanced-search="true"
+      data-cache="false"
+      data-filter-control="true"
+      data-id-table="advancedTable"
+      data-reorderable-columns="true"
+      data-reorderable-rows="true"
+      data-resizable="true"
+      data-search="true"
+      data-show-columns-search="true"
+      data-show-columns-toggle-all="true"
+      data-show-columns="true"
+      data-use-row-attr-func="true"
+      data-click-to-select="true"
+      data-buttons-toolbar=".buttons-toolbar"
+      data-buttons-align="right"
+    >
+    </table>
+  </div>
+</div>
+
+<div class="container-fluid d-flex flex-column vh-100">
+  <div class="row">
+    <%= render partial: "dashboard/nav" %>
+  </div>
+
+  <div class="row d-flex flex-fill">
+    <div class="col py-5" style="max-width: 60px;">
+      <div class="btn btn-light d-inline-flex align-items-center" style="height: 100%;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks">
+        <i class="bi bi-arrow-bar-right"></i>
+      </div>
+    </div>
+    <div class="col flex-grow-1">
+      <table
+        id="work_table"
+        data-advanced-search="true"
+        data-cache="false"
+        data-filter-control="true"
+        data-id-table="advancedTable"
+        data-reorderable-columns="true"
+        data-reorderable-rows="false"
+        data-resizable="true"
+        data-search="true"
+        data-show-columns-search="true"
+        data-show-columns-toggle-all="true"
+        data-show-columns="true"
+        data-use-row-attr-func="false"
+      >
+      </table>
+    </div>
+  </div>
+</div>

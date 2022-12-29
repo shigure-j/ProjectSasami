@@ -1,27 +1,182 @@
-<%= form_with model: @work, data: {turbo_confirm: "Save?"} do |form| %>
-
-  <% [:name, :project, :design, :owner, :stage, :path].each do |input| %>
-    <div>
-      <%= form.label input %><br>
-      <%= form.text_field input %>
-    </div>
-  <% end %>
-
-  <% [:start_time, :end_time].each do |input| %>
-    <div>
-      <%= form.label input %><br>
-      <%= form.datetime_select input%>
-    </div>
-  <% end %>
-
-  <div>
-    <%= form.label :data %>
-    <%= form.file_field :data%>
+<div class="container-fluid d-flex flex-column vh-100">
+  <div class="row">
+    <%= render partial: "dashboard/nav" %>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="row px-5 py-5">
+    <div class="accordion" id="accordionExample">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Upload work manually
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <%= form_with model: @work do |form| %>
+              <% [:name, :project, :design, :owner, :stage, :path].each do |input| %>
+                <div class="form-floating mb-3">
+                  <input placeholder="" type="text" class="form-control" id="work_<%= input %>" name="work[<%= input %>]">
+                  <label for="work_<%= input %>"><%= input %></label>
+                </div>
+              <% end %>
+              <div class="mb-3">
+                <!--input class="form-control" type="file" id="work_data" name="work[data]"-->
+                <%= form.file_field :data, class: "form-control" %>
+              </div>
+              <% [:start_time, :end_time].each do |input| %>
+                <div>
+                  <%= form.label input, class: "form-label" %><br>
+                  <%= form.datetime_select input %>
+                </div>
+              <% end %>
+              <%= form.submit class: "btn btn-primary my-2" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            Batch upload
+          </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <p> curl -X POST server/works \ </p>
+            <p>     -F "work[name]=test" \ </p>
+            <p>     -F "work[project]=MC50" \ </p>
+            <p>     -F "work[design]=test_design" \ </p>
+            <p>     -F "work[owner]=j" \ </p>
+            <p>     -F "work[stage]=syn" \ </p>
+            <p>     -F "work[path]=test_path/a/b/c"\ </p>
+            <p>     -F "work[start_time(1i)]=2022" \ </p>
+            <p>     -F "work[start_time(2i)]=10" \ </p>
+            <p>     -F "work[start_time(3i)]=18" \ </p>
+            <p>     -F "work[start_time(4i)]=11" \ </p>
+            <p>     -F "work[start_time(5i)]=12" \ </p>
+            <p>     -F "work[end_time(1i)]=2022" \ </p>
+            <p>     -F "work[end_time(2i)]=10" \ </p>
+            <p>     -F "work[end_time(3i)]=19" \ </p>
+            <p>     -F "work[end_time(4i)]=13" \ </p>
+            <p>     -F "work[end_time(5i)]=14" \ </p>
+            <p>     -F "work[data]=@test_input/test.flat.json" </p>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            Data JSON example
+          </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <p> [ </p>
+            <p>     { </p>
+            <p>         "key": "area", </p>
+            <p>         "value": "224" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "vpn", </p>
+            <p>         "value": "8", </p>
+            <p>         "scenario": "ffgnpbbb", </p>
+            <p>         "type": "hold", </p>
+            <p>         "pba": "gba", </p>
+            <p>         "group": "B" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "tns", </p>
+            <p>         "value": "11", </p>
+            <p>         "scenario": "ffgnpbbb", </p>
+            <p>         "type": "hold", </p>
+            <p>         "pba": "gba", </p>
+            <p>         "group": "C" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "wns", </p>
+            <p>         "value": "2", </p>
+            <p>         "scenario": "ffgnpaaa", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "gba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "vpn", </p>
+            <p>         "value": "55", </p>
+            <p>         "scenario": "ssgnpaaa", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "gba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "tns", </p>
+            <p>         "value": "45", </p>
+            <p>         "scenario": "ssgnpaaa", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "gba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "wns", </p>
+            <p>         "value": "52", </p>
+            <p>         "scenario": "ssgnpaaa", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "gba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "vpn", </p>
+            <p>         "value": "63", </p>
+            <p>         "scenario": "ffgnpaaa", </p>
+            <p>         "type": "hold", </p>
+            <p>         "pba": "pba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "tns", </p>
+            <p>         "value": "74", </p>
+            <p>         "scenario": "ffgnpaaa", </p>
+            <p>         "type": "hold", </p>
+            <p>         "pba": "pba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "wns", </p>
+            <p>         "value": "106", </p>
+            <p>         "scenario": "ffgnpaaa", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "pba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "vpn", </p>
+            <p>         "value": "96", </p>
+            <p>         "scenario": "ssgnpbbb", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "pba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "tns", </p>
+            <p>         "value": "97", </p>
+            <p>         "scenario": "ssgnpbbb", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "pba", </p>
+            <p>         "group": "A" </p>
+            <p>     }, </p>
+            <p>     { </p>
+            <p>         "key": "wns", </p>
+            <p>         "value": "91", </p>
+            <p>         "scenario": "ssgnpaaa", </p>
+            <p>         "type": "setup", </p>
+            <p>         "pba": "pba", </p>
+            <p>         "group": "A" </p>
+            <p>     } </p>
+            <p> ] </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-<% end %>
-
-<%= javascript_include_tag "common" %>
+</div>

@@ -1,0 +1,56 @@
+curl -X POST 127.0.0.1:3000/works \
+    -F "work[name]=test" \
+    -F "work[project]=p60" \
+    -F "work[design]=test_design" \
+    -F "work[owner]=j" \
+    -F "work[stage]=sta" \
+    -F "work[path]=test_path/a/b/c"\
+    -F "work[start_time(1i)]=2022" \
+    -F "work[start_time(2i)]=10" \
+    -F "work[start_time(3i)]=18" \
+    -F "work[start_time(4i)]=11" \
+    -F "work[start_time(5i)]=12" \
+    -F "work[end_time(1i)]=2022" \
+    -F "work[end_time(2i)]=10" \
+    -F "work[end_time(3i)]=19" \
+    -F "work[end_time(4i)]=13" \
+    -F "work[end_time(5i)]=14" \
+    -F "work[data]=@test_input/test.flat.json"
+
+curl -X POST 127.0.0.1:3000/works \
+    -F "work[name]=test" \
+    -F "work[project]=p20" \
+    -F "work[design]=test_core" \
+    -F "work[owner]=j" \
+    -F "work[stage]=sta" \
+    -F "work[path]=test_path/B/b/c"\
+    -F "work[start_time(1i)]=2022" \
+    -F "work[start_time(2i)]=10" \
+    -F "work[start_time(3i)]=18" \
+    -F "work[start_time(4i)]=11" \
+    -F "work[start_time(5i)]=12" \
+    -F "work[end_time(1i)]=2022" \
+    -F "work[end_time(2i)]=10" \
+    -F "work[end_time(3i)]=19" \
+    -F "work[end_time(4i)]=13" \
+    -F "work[end_time(5i)]=14" \
+    -F "work[data]=@test_input/test.flat2.json"
+
+curl -X POST 127.0.0.1:3000/works \
+    -F "work[name]=stest" \
+    -F "work[project]=p20" \
+    -F "work[design]=test_design" \
+    -F "work[owner]=j" \
+    -F "work[stage]=syn" \
+    -F "work[path]=work/22223"\
+    -F "work[start_time(1i)]=2022" \
+    -F "work[start_time(2i)]=10" \
+    -F "work[start_time(3i)]=18" \
+    -F "work[start_time(4i)]=11" \
+    -F "work[start_time(5i)]=12" \
+    -F "work[end_time(1i)]=2022" \
+    -F "work[end_time(2i)]=10" \
+    -F "work[end_time(3i)]=19" \
+    -F "work[end_time(4i)]=13" \
+    -F "work[end_time(5i)]=14" \
+    -F "work[data]=@test_input/test.flat3.json"

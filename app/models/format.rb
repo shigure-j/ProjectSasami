@@ -1,8 +1,8 @@
 class Format < ApplicationRecord
   belongs_to :stage, optional: true
 
-  def format_of(cate)
-    n_fmt = JSON.parse(self.format)[cate]
+  def get_format
+    n_fmt = JSON.parse(self.format)
     n_fmt.keys.map do |key|
       value = n_fmt[key] || {}
       [key, 

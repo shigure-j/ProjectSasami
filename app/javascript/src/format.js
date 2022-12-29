@@ -33,6 +33,10 @@ window.cellFormatter = function(type, opt) {
       return function(value) {
         return value
       }
+    case "path":
+      return function(value) {
+        return '<button type="button" class="btn btn-secondary focus-popover" data-clipboard-action="copy" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" data-clipboard-text="' + value + '" data-bs-content="' + value + '"> copy </button>'
+      }
     default:
       return function(value) {
         return value
@@ -41,9 +45,62 @@ window.cellFormatter = function(type, opt) {
 }
 
 window.setColAsGroup = function(row, element, field, table) {
-    if (table.getOptions().groupBy && table.getOptions().groupByField == field) {
-      table.refreshOptions({groupBy: false})
-    } else {
-      table.refreshOptions({groupBy: true, groupByField: field, groupByToggle: true, groupByShowToggleIcon: true})
+  if (table.getOptions().groupBy && table.getOptions().groupByField == field) {
+    table.refreshOptions({groupBy: false})
+  } else {
+    table.refreshOptions({groupBy: true, groupByField: field, groupByToggle: true, groupByShowToggleIcon: true})
+  }
+}
+
+window.replaceParamVal = function(paramName,replaceWith) {
+  var oUrl = this.location.href.toString();
+  var re=eval('/('+ paramName+'=)([^&]*)/gi');
+  var nUrl = oUrl.replace(re,paramName+'='+replaceWith);
+  //this.location = nUrl;
+  //window.location.href=nUrl
+  history.replaceState(0,0,nUrl);
+}
+
+window.loadWork = function(incr, redirect) {
+  $table = $('#dashboard_view')
+  org_ids = []
+  if (incr) {
+    $("#work_table").bootstrapTable("getVisibleColumns").forEach(function(v) {
+      id = v.field;
+      if (typeof id == 'number') {
+        org_ids.push(id)
+      }
+    })
+  }
+  work_ids = org_ids.concat($table.bootstrapTable('getSelections').map(function(row) {
+    return row.id
+  }))
+  if (redirect) {
+    window.location.href="detail?works=" + work_ids.join(",")
+  } else {
+    replaceParamVal("works", work_ids.join(","))
+    $.get("data?works="+ work_ids.join(","))
+  }
+}
+
+window.loadWorks = function() {
+  $table = $('#dashboard_view')
+  work_ids = $table.bootstrapTable('getSelections').map(function(row) {
+    return row.id
+  })
+  $.get("data?works="+ work_ids.join(",")).then (
+    function (res) {
+      $("#work_table").bootstrapTable("destroy")
+      $("#work_table").bootstrapTable(res)
+      //$("#work_table").bootstrapTable(`refreshOptions(${res})`)
     }
+  )
+}
+
+window.loadSum = function(param) {
+  $.get("data?" + param).then (
+    function (res) {
+      eval(res)
+    }
+  )
 }

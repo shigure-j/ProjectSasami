@@ -1,7 +1,10 @@
+$offcanvas-horizontal-width:        75%;
+
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons';
 @import 'bootstrap-table/dist/bootstrap-table';
 @import 'bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control';
 @import 'bootstrap-table/dist/extensions/group-by-v2/bootstrap-table-group-by';
+@import 'bootstrap-table/dist/extensions/reorder-rows/bootstrap-table-reorder-rows';
 @import 'jquery-resizable-columns/dist/jquery.resizableColumns';
 @import 'dragtable/dragtable';
