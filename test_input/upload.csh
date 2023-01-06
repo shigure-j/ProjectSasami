@@ -1,8 +1,10 @@
 curl -X POST 127.0.0.1:3000/works \
+    --header "Accept: application/json" \
+    -F "work[signature]=@/home/jiangxi/.sasami_key" \
     -F "work[name]=test" \
     -F "work[project]=p60" \
     -F "work[design]=test_design" \
-    -F "work[owner]=j" \
+    -F "work[owner]=jiangxi" \
     -F "work[stage]=sta" \
     -F "work[path]=test_path/a/b/c"\
     -F "work[start_time(1i)]=2022" \
@@ -18,10 +20,12 @@ curl -X POST 127.0.0.1:3000/works \
     -F "work[data]=@test_input/test.flat.json"
 
 curl -X POST 127.0.0.1:3000/works \
+    --header "Accept: application/json" \
+    -F "work[signature]=@/home/jiangxi/.sasami_key" \
     -F "work[name]=test" \
     -F "work[project]=p20" \
     -F "work[design]=test_core" \
-    -F "work[owner]=j" \
+    -F "work[owner]=jiangxi" \
     -F "work[stage]=sta" \
     -F "work[path]=test_path/B/b/c"\
     -F "work[start_time(1i)]=2022" \
@@ -37,10 +41,12 @@ curl -X POST 127.0.0.1:3000/works \
     -F "work[data]=@test_input/test.flat2.json"
 
 curl -X POST 127.0.0.1:3000/works \
+    --header "Accept: application/json" \
+    -F "work[signature]=@/home/jiangxi/.sasami_key" \
     -F "work[name]=stest" \
     -F "work[project]=p20" \
     -F "work[design]=test_design" \
-    -F "work[owner]=j" \
+    -F "work[owner]=jiangxi" \
     -F "work[stage]=syn" \
     -F "work[path]=work/22223"\
     -F "work[start_time(1i)]=2022" \
@@ -54,3 +60,27 @@ curl -X POST 127.0.0.1:3000/works \
     -F "work[end_time(4i)]=13" \
     -F "work[end_time(5i)]=14" \
     -F "work[data]=@test_input/test.flat3.json"
+
+curl -X POST 127.0.0.1:3000/works \
+    --header "Accept: application/json" \
+    -F "work[signature]=@/home/jiangxi/.sasami_key" \
+    -F "work[name]=pic" \
+    -F "work[project]=mp80" \
+    -F "work[design]=t_core" \
+    -F "work[owner]=jiangxi" \
+    -F "work[stage]=layout" \
+    -F "work[path]=Work/22i4"\
+    -F "work[start_time(1i)]=2023" \
+    -F "work[start_time(2i)]=1" \
+    -F "work[start_time(3i)]=8" \
+    -F "work[start_time(4i)]=1" \
+    -F "work[start_time(5i)]=2" \
+    -F "work[end_time(1i)]=2023" \
+    -F "work[end_time(2i)]=2" \
+    -F "work[end_time(3i)]=9" \
+    -F "work[end_time(4i)]=3" \
+    -F "work[end_time(5i)]=4" \
+    -F "work[data]=@test_input/test.flat4.pic.json" \
+    -F "work[pictures][]=" \
+    -F "work[pictures][]=@/mnt/c/Users/jiangxi/Pictures/Screenshots/屏幕截图_20230104_184109.png" \
+    -F "work[pictures][]=@/mnt/c/Users/jiangxi/Pictures/Screenshots/屏幕截图_20230104_151634.png" \

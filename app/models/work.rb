@@ -1,5 +1,6 @@
 class Work < ApplicationRecord
   has_one_attached :data
+  has_many_attached :pictures
   belongs_to :owner
   belongs_to :project
   belongs_to :design

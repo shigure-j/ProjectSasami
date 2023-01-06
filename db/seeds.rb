@@ -5,3 +5,41 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
+
+# Default work format
+format = Format.new(name: :work)
+format.format = %q({
+    "name": {
+        "type": "string",
+        "option": ""
+    },
+    "project": {
+        "type": "string",
+        "option": ""
+    },
+    "design": {
+        "type": "string",
+        "option": ""
+    },
+    "stage": {
+        "type": "string",
+        "option": ""
+    },
+    "owner": {
+        "type": "string",
+        "option": ""
+    },
+    "path": {
+        "type": "path",
+        "option": ""
+    },
+    "start_time": {
+        "type": "datetime",
+        "option": "yyyy/MM/dd HH:mm"
+    },
+    "end_time": {
+        "type": "datetime",
+        "option": "yyyy/MM/dd HH:mm"
+    }
+})
+format.save

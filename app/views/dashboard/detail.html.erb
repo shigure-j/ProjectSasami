@@ -1,6 +1,6 @@
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWorks" aria-labelledby="offcanvasLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasLabel">Offcanvas</h5>
+    <h5 class="offcanvas-title" id="offcanvasLabel">Works</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body" id="nav-table-div">
@@ -11,47 +11,29 @@
       </div>
       <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
     </div>
-    <table  
-      id="dashboard_view"
-      data-advanced-search="true"
-      data-cache="false"
-      data-filter-control="true"
-      data-id-table="advancedTable"
-      data-reorderable-columns="true"
-      data-reorderable-rows="true"
-      data-resizable="true"
-      data-search="true"
-      data-show-columns-search="true"
-      data-show-columns-toggle-all="true"
-      data-show-columns="true"
-      data-use-row-attr-func="true"
-      data-click-to-select="true"
-      data-buttons-toolbar=".buttons-toolbar"
-      data-buttons-align="right"
-    >
-    </table>
+    <%= render partial: "dashboard/summary", locals: {format: @format} %>
   </div>
 </div>
 
 <div class="container-fluid d-flex flex-column vh-100">
   <div class="row">
-    <%= render partial: "dashboard/nav" %>
+    <%= render partial: "nav" %>
   </div>
 
   <div class="row d-flex flex-fill">
-    <div class="col py-5" style="max-width: 60px;">
+    <div class="col-1 py-5" style="max-width: 60px;">
       <div class="btn btn-light d-inline-flex align-items-center" style="height: 100%;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks">
         <i class="bi bi-arrow-bar-right"></i>
       </div>
     </div>
-    <div class="col flex-grow-1">
+    <div class="col-1 flex-grow-1">
       <table
         id="work_table"
         data-advanced-search="true"
         data-cache="false"
         data-filter-control="true"
         data-id-table="advancedTable"
-        data-reorderable-columns="true"
+        data-reorderable-columns="false"
         data-reorderable-rows="false"
         data-resizable="true"
         data-search="true"
@@ -59,8 +41,19 @@
         data-show-columns-toggle-all="true"
         data-show-columns="true"
         data-use-row-attr-func="false"
+        data-show-multi-sort="true"
       >
       </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade modal-xl" id="modal_view_div" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div id="modal_view"></div>
+      </div>
     </div>
   </div>
 </div>

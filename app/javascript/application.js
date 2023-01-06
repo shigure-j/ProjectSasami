@@ -15,9 +15,11 @@ import "bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-co
 import "bootstrap-table/dist/extensions/toolbar/bootstrap-table-toolbar"
 import "bootstrap-table/dist/extensions/resizable/bootstrap-table-resizable"
 import "bootstrap-table/dist/extensions/group-by-v2/bootstrap-table-group-by"
+import "bootstrap-table/dist/extensions/fixed-columns/bootstrap-table-fixed-columns"
+import "bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort"
+//import "bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header"
 //import "bootstrap-table/dist/extensions/reorder-rows/bootstrap-table-reorder-rows"
 import "./src/format"
 
 window.bootstrap = bootstrap
 window.ClipboardJS = ClipboardJS
-

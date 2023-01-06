@@ -20,16 +20,45 @@
                   <label for="work_<%= input %>"><%= input %></label>
                 </div>
               <% end %>
-              <div class="mb-3">
-                <!--input class="form-control" type="file" id="work_data" name="work[data]"-->
-                <%= form.file_field :data, class: "form-control" %>
+              <div class="form-check mb-3">
+                <%= form.check_box :is_private, class: "form-check-input", id: "check_is_private" %>
+                <label class="form-check-label" for="check_is_private"> Private </label>
               </div>
               <% [:start_time, :end_time].each do |input| %>
-                <div>
+                <div class="mb-3">
                   <%= form.label input, class: "form-label" %><br>
                   <%= form.datetime_select input %>
                 </div>
               <% end %>
+              <div class="mb-3">
+                <label for="input_data_json" class="form-label"> Data JSON </label>
+                <%= form.file_field :data, class: "form-control", id: "input_data_json" %>
+              </div>
+              <div class="mb-3">
+                <label for="input_pictures" class="form-label"> Pictures </label>
+                <%= form.file_field :pictures, multiple: true, class: "form-control", id: "input_pictures" %>
+              </div>
+              <div class="mb-3">
+                <label for="input_user_signature" class="form-label" > Signature File </label>
+                <%= form.file_field :signature, class: "form-control", id: "input_user_signature" %>
+                <i class="bi bi-info-circle-fill" data-bs-toggle="modal" data-bs-target="#signature_about">About User Signature</i>
+                <div class="modal fade modal-lg" id="signature_about" tabindex="-1" aria-labelledby="signature_about_label" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="signature_about_label">About User Signature</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <h5>Select existed signature file:</h5>
+                        <p class="py-3">~/.sasami_key</p>
+                        <h5>For new user, you can generate a signature by command below:</h5>
+                        <p class="py-3"><%= %q(echo `date +%s``hexdump -v -n 8 -e '/1 "%02X"' /dev/random` > ~/.sasami_key) %></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <%= form.submit class: "btn btn-primary my-2" %>
             <% end %>
           </div>

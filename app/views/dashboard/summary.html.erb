@@ -9,7 +9,7 @@
 
 <div class="container-fluid d-flex flex-column vh-100">
   <div class="row">
-    <%= render partial: "dashboard/nav" %>
+    <%= render partial: "nav" %>
   </div>
 
   <div class="row d-flex flex-fill">
@@ -20,25 +20,7 @@
         </div>
         <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
       </div>
-      <table  
-        id="dashboard_view"
-        data-advanced-search="true"
-        data-cache="false"
-        data-filter-control="true"
-        data-id-table="advancedTable"
-        data-reorderable-columns="true"
-        data-reorderable-rows="true"
-        data-resizable="true"
-        data-search="true"
-        data-show-columns-search="true"
-        data-show-columns-toggle-all="true"
-        data-show-columns="true"
-        data-use-row-attr-func="true"
-        data-click-to-select="true"
-        data-buttons-toolbar=".buttons-toolbar"
-        data-buttons-align="right"
-      >
-      </table>
+      <%= render partial: "summary", locals: {format: @format} %>
     </div>
   </div>
 </div>

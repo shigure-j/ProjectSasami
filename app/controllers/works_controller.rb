@@ -1,35 +1,14 @@
 class WorksController < ApplicationController
   protect_from_forgery :except => [:create]
 
-  def gen_works_summary(works)
-    merge_table = works.map { |work| work.attributes_with_references true }
-    format = Format.find_by(name: :work).get_format
-    table_id = "dashboard_view"
-
-    # Response
-    common_col_opt = {
-      filterControl: :select,
-      sortable: true
-    }
-    columns = [{ field: nil, title: nil, checkbox: true }, { field: :id, title: :id, visible: false }]
-    no = 0
-    format.each do |key, value| 
-      columns << { field: key, title: key, formatter: "cellFormatter#{table_id}#{no}" }.merge(common_col_opt)
-      no += 1
-    end
-    respon_data = {columns: columns, data: merge_table}
-
-    respond_to do |res|
-      res.js { render 'dashboard/table', locals: {
-          table_id: table_id, table_format: format,
-          table_data: respon_data
-        }
-      }
-    end
-  end
-
-  def gen_works_detail(works)
+  def get_work
+    works = Work.find(params[:works].split(","))
     works_data = works.map {|work| JSON.parse Zlib::inflate(work.data.download)}
+    works_pics = works.map do |work|
+      work.pictures.map do |pic| 
+        view_context.image_tag pic, size: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
+      end
+    end
     table_id = "work_table"
 
     # Get all index
@@ -40,6 +19,10 @@ class WorksController < ApplicationController
       work_data.each do |record|
         value = record.delete "value"
         indexes += record.keys
+        pic_flag, pic_no = value.split(":")
+        if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
+          value = works_pics[index][pic_no.to_i]
+        end
         if merge_data[record].nil? 
           merge_data[record] = {work.id => value}
         else
@@ -63,28 +46,86 @@ class WorksController < ApplicationController
     }
     columns = indexes.map { |idx| { field: idx, title: idx }.merge common_col_opt }
     columns << { field: :key, title: :key }.merge(common_col_opt)
+    fix_cols = columns.size
     columns += works.map { |work| { field: work.id, title: work.name }.merge common_col_opt }
-    respon_data = {columns: columns, data: merge_table}
+    #columns += works.map { |work| { field: work.id, title: work.name } }
+    respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_table}
 
+    #TODO
     #render json: {columns: columns, data: merge_table}.to_json
     respond_to do |res|
       res.js { render 'dashboard/table', locals: {
           table_id: table_id, table_format: [],
-          table_data: respon_data
+          table_data: respon_data, table_pictures: works_pics
         }
       }
     end
   end
 
-  def data
-    if params.key?(:works)
-      @works = Work.find(params[:works].split(","))
-      respon = gen_works_detail @works
+  def get_summary
+    #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
+    # filter
+    objs = {
+      "project" => Project,
+      "design" => Design,
+      "stage" => Stage,
+      "owner" => Owner
+    }
+    if params["filter"].nil?
+      filtered_works = Work.all
     else
-      #TODO
-      @works = Work.all
-      respon = gen_works_summary @works
+      filter = {}
+      JSON.parse(params["filter"]).each do |name, value|
+        if objs.key?(name)
+          id = objs[name].find_by(name: value)
+          filter[name + "_id"] = id
+        elsif name.match?("time")
+          filter[name] = Time.parse(value)
+        else
+          filter[name] = value
+        end
+      end
+      filtered_works = Work.where filter
     end
+    # search
+    if params["search"].empty?
+      works = filtered_works
+    else
+      works = []
+      filtered_works.each do |work|
+        works << work if work.name.match?(params["search"])
+      end
+    end
+    # sort
+    unless params["sort"].nil?
+      sort_key = params["sort"]
+      sort_obj = nil
+      if objs.key?(params["sort"])
+        sort_obj = objs[params["sort"]]
+        sort_key += "_id"
+      end
+      works = works.sort_by do |work|
+        if sort_obj.nil?
+          work.attribute_in_database(sort_key)
+        else
+          sort_obj.find(work.attribute_in_database(sort_key)).name
+        end
+      end
+      if params["order"].eql?("desc")
+        works.reverse!
+      end
+    end
+    # output
+    total = Work.count
+    count = works.size
+    range = params["offset"].to_i...(params["offset"].to_i + params["limit"].to_i)
+    target_works = works[range]
+    merge_table = target_works.map { |work| work.attributes_with_references true }
+
+    # Response
+    respon_data = {rows: merge_table, total: count, totalNotFiltered: total}
+
+    render json: respon_data
   end
 
   def show
@@ -105,9 +146,13 @@ class WorksController < ApplicationController
     comp_file.write Zlib::deflate(data_content.to_json)
     i_params[:data].tempfile = comp_file
 
-    [Project, Owner, Stage].each do |obj_class|
+    unless i_params[:picture].nil?
+      i_params[:pictures].shift
+    end
+
+    [Project, Stage].each do |obj_class|
       obj_class_name = obj_class.name.downcase
-      n_obj_name = i_params[obj_class_name.to_sym]
+      n_obj_name = work_params[obj_class_name.to_sym]
       obj = obj_class.find_by name: n_obj_name
       if obj.nil?
         obj = obj_class.new(name: n_obj_name)
@@ -116,6 +161,28 @@ class WorksController < ApplicationController
       i_params[obj_class_name.to_sym] = obj
     end
 
+    if work_params[:signature].nil?
+      respond_to do |res|
+        res.html { render :new, status: :unprocessable_entity }
+        res.json { render json: {status: :failed, message: "No user signature"} }
+      end
+      return
+    end
+
+    signature = work_params[:signature].read
+    owner = Owner.find_by(signature: signature)
+    if owner.nil?
+      owner = Owner.new name: work_params[:owner], signature: signature
+    elsif !owner.name.eql? work_params[:owner]
+      respond_to do |res|
+        res.html { render :new, status: :unprocessable_entity }
+        res.json { render json: {status: :failed, message: "User name and signature mismatch"} }
+      end
+      return
+    end
+    i_params.delete :signature
+    i_params[:owner] = owner
+
     design = i_params[:project].designs.find_by name: i_params[:design]
     if design.nil?
       design = i_params[:project].designs.create(name: i_params[:design])
@@ -123,20 +190,22 @@ class WorksController < ApplicationController
     end
     i_params[:design] = design
 
-    #if i_params[:stage].default_format.nil? 
-    #  format_obj = i_params[:stage].formats.create(name: :default)
-    #  format_obj.init_format_by(data_content)
-    #  format_obj.save
-    #  i_params[:stage].default_format = format_obj.id
-    #  i_params[:stage].save
-    #end
+    if work_params[:is_private].nil?
+      i_params[:is_private] = false
+    end
 
     @work = Work.new(i_params)
 
     if @work.save
-      redirect_to @work
+      respond_to do |res|
+        res.html { redirect_to @work }
+        res.json { render json: {status: :done, message: "Uploaed as #{@work.id}"} }
+      end
     else
-      render :new, status: :unprocessable_entity
+      respond_to do |res|
+        res.html { render :new, status: :unprocessable_entity }
+        res.json { render json: {status: :false, message: "Wrong work format"} }
+      end
     end
 
     comp_file.close
@@ -144,21 +213,6 @@ class WorksController < ApplicationController
 
 private
   def work_params
-    params.require(:work).permit(:name, :design, :project, :path, :owner, :stage, :start_time, :end_time, :data)
-  end
-
-  def formatter(value, type, opt)
-    case type
-    when "int"
-      value.to_i
-    when "float"
-      format("%.#{opt}f", value)
-    when "datetime"
-      Time.parse(value).strftime(opt) ; #"%Y/%m/%d %H:%M"
-    when "path"
-      '<button type="button" class="btn btn-secondary focus-popover" data-clipboard-action="copy" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" data-clipboard-text="' + value + '" data-bs-content="' + value + '"> copy </button>'
-    else
-      value
-    end
+    params.require(:work).permit(:name, :design, :project, :path, :owner, :stage, :start_time, :end_time, :data, :signature, :is_private, pictures: [])
   end
 end

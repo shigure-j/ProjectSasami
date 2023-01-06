@@ -13,9 +13,15 @@ window.onpageshow = function() {
         selector: '.focus-popover',
         trigger: 'hover focus'
     });
-    //
-    $.get("data")
-    $.get("data?" + document.URL.split("?")[1])
+    // Tooltip
+    //$('body').tooltip({
+    //    selector: '.tooltip'
+    //});
+    //$.get("data")
+    if ($("#dashboard_view").size() != 0) {
+        $("#dashboard_view").bootstrapTable()
+    }
+    if ($("#work_table").size() != 0) {
+        $.get("/data/work?" + document.URL.split("?")[1])
+    }
 }
-    $.get("data")
-    $.get("data?" + document.URL.split("?")[1])

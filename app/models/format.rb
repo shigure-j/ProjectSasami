@@ -1,13 +1,18 @@
 class Format < ApplicationRecord
   belongs_to :stage, optional: true
 
-  def get_format
+  def get_format(add=nil)
     n_fmt = JSON.parse(self.format)
     n_fmt.keys.map do |key|
       value = n_fmt[key] || {}
+      if add.nil?
+        formatter = "window.cellFormatter('#{value["type"]}', '#{value["option"]}')"
+      else
+        formatter = "window.cellFormatter('#{value["type"]}', '#{value["option"]}', #{add})"
+      end
       [key, 
         {
-          formatter:  "window.cellFormatter('#{value["type"]}', '#{value["option"]}')",
+          formatter:  formatter,
           width:      value["width"]
         }
       ]

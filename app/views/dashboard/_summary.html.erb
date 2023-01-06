@@ -1,0 +1,42 @@
+<table  
+  id="dashboard_view"
+  data-advanced-search="true"
+  data-cache="false"
+  data-filter-control="true"
+  data-id-table="advancedTable"
+  data-reorderable-columns="true"
+  data-reorderable-rows="true"
+  data-resizable="true"
+  data-search="true"
+  data-show-columns-search="true"
+  data-show-columns-toggle-all="true"
+  data-show-columns="true"
+  data-use-row-attr-func="true"
+  data-click-to-select="true"
+  data-buttons-toolbar=".buttons-toolbar"
+  data-buttons-align="right"
+  data-pagination="true"
+  data-side-pagination="server"
+  data-url="/data/summary"
+>
+  <thead>
+    <tr>
+      <th data-field=""   data-checkbox="true"></th>
+      <th data-field="id" data-visible="false">id</th>
+      <% no = 0 %>
+      <% format.each do |key, value| %>
+        <th data-field="<%= key %>"
+          <% unless value[:formatter].nil? %>
+            data-formatter="<%= "cellFormatterDashboardView#{no}" %>"
+          <% end %>
+            data-filter-control="select"
+            data-sortable="true"
+        > <%= key %> </th>
+        <% unless value[:formatter].nil? %>
+          <script> <%= "cellFormatterDashboardView#{no}" %> = <%= value[:formatter].html_safe %> </script>
+        <% end %>
+        <% no += 1 %>
+      <% end %>
+    </tr>
+  </thead>
+</table>

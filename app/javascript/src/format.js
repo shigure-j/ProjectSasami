@@ -14,7 +14,7 @@ Date.prototype.format = function (fmt) { //author: meizz
     return fmt;
 }
 
-window.cellFormatter = function(type, opt) {
+window.cellFormatter = function(type, opt, add) {
   switch (type) {
     case "int":
       return function(value) {
@@ -36,6 +36,10 @@ window.cellFormatter = function(type, opt) {
     case "path":
       return function(value) {
         return '<button type="button" class="btn btn-secondary focus-popover" data-clipboard-action="copy" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" data-clipboard-text="' + value + '" data-bs-content="' + value + '"> copy </button>'
+      }
+    case "image":
+      return function(value, row, index, field) {
+        return add[field][value.split(":")[1]]
       }
     default:
       return function(value) {
@@ -79,7 +83,7 @@ window.loadWork = function(incr, redirect) {
     window.location.href="detail?works=" + work_ids.join(",")
   } else {
     replaceParamVal("works", work_ids.join(","))
-    $.get("data?works="+ work_ids.join(","))
+    $.get("/data/work?works="+ work_ids.join(","))
   }
 }
 
@@ -97,10 +101,24 @@ window.loadWorks = function() {
   )
 }
 
+window.getSummary = function(params) {
+  $.get("/data/summary?" + params.data).then(function(res) {
+    params.success(res)
+  })
+}
+
 window.loadSum = function(param) {
   $.get("data?" + param).then (
     function (res) {
       eval(res)
     }
   )
+}
+window.modalView = function(content) {
+  $("#modal_view").replaceWith(content)
+  const myModalAlternative = new bootstrap.Modal('#modal_view_div')
+  myModalAlternative.show()
+  //myModalAlternative.addEventListener('shown.bs.modal', () => {
+  //  myInput.focus()
+  //})
 }
