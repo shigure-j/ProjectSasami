@@ -1,0 +1,7 @@
+<turbo-frame id="owner_status">
+  <% if @owner.nil? %>
+    Login
+  <% else %>
+    Hi, <%= @owner.name %>
+  <% end %>
+</turbo-frame>

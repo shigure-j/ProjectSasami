@@ -26,4 +26,13 @@ class Work < ApplicationRecord
       end
     end.to_h
   end
+
+  def self.filter_by_owner(owner=nil)
+    private_works = Work.where is_private: true
+    unless owner.nil?
+      owner_works = private_works.where owner: owner
+      private_works.excluding! owner_works
+    end
+    public_works = Work.excluding private_works
+  end
 end

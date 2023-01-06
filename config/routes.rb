@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get "summary", to: "dashboard#summary"
 
   get  "login",  to: 'owner_sessions#new', :as => :login
+  get  "login_status",  to: 'owner_sessions#status'
   post "login",  to: "owner_sessions#create"
-  post "logout", to: 'owner_sessions#destroy', :as => :logout
+  get "logout", to: 'owner_sessions#destroy', :as => :logout
 end

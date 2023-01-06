@@ -1,6 +1,25 @@
 class OwnerSessionsController < ApplicationController
+
+  def new
+    if logged_in?
+      @owner = current_user
+    else
+      @owner = nil
+    end
+    @message = nil
+  end
+
+  def status
+    if logged_in?
+      @owner = current_user
+    else
+      @owner = nil
+    end
+  end
+
   def create
 
+    #raise :js if request.accepts.select do |n| n.symbol.eql?( :javascript ) end.size.zero?
     if params[:signature].nil?
       @owner = nil
       @message = "Empty Signature"
@@ -20,10 +39,10 @@ class OwnerSessionsController < ApplicationController
         @message = "Login as #{@owner.name}"
       end
     end
+    render :new if @owner.nil?
   end
 
   def destroy
     logout
-    render "log_status", locals: {owner: nil, message: "Logout"}
   end
 end

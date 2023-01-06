@@ -15,15 +15,25 @@
         <%= link_to "Owners", "/owners/index", class: "nav-link" %>
       </li-->
       <li class="nav-item">
-        <%= link_to "Works", "/summary", class: "nav-link", onclick: "window.location.reload()" %>
+        <%= link_to "Works", "/summary", class: "nav-link", data: {turbo: false} %>
       </li>
       <li class="nav-item">
-        <%= link_to "Upload", "/works/new", class: "nav-link", onclick: "window.location.reload()" %>
+        <%= link_to "Upload", "/works/new", class: "nav-link", data: {turbo: false} %>
       </li>
     </ul>
-    <!--form class="d-flex" role="search">
-      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form-->
+    <div class="d-flex" data-bs-toggle="modal" data-bs-target="#login_modal" onclick="document.getElementById('login_fram').reload();">
+      <span class="nav-item">
+        <turbo-frame id="owner_status" src="/login_status"></turbo-frame>
+      </span>
+    </div>
   </div>
 </nav>
+
+<div class="modal fade modal" id="login_modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <turbo-frame id="login_fram" src="/login" loading="lazy">
+      </turbo-frame>
+    </div>
+  </div>
+</div>

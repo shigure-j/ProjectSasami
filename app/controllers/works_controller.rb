@@ -2,7 +2,16 @@ class WorksController < ApplicationController
   protect_from_forgery :except => [:create]
 
   def get_work
-    works = Work.find(params[:works].split(","))
+    public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
+
+    begin
+      works = public_works.find params[:works].split(",")
+    rescue
+      #ActiveRecord::RecordNotFound
+      render js: 'alert("Invalid request!");'
+      return
+    end
+
     works_data = works.map {|work| JSON.parse Zlib::inflate(work.data.download)}
     works_pics = works.map do |work|
       work.pictures.map do |pic| 
@@ -64,6 +73,14 @@ class WorksController < ApplicationController
 
   def get_summary
     #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
+    #
+    #private_works = Work.where is_private: true
+    #if logged_in?
+    #  owner_works = private_works.where owner: current_user
+    #  private_works.excluding! owner_works
+    #end
+    #public_works = Work.excluding private_works
+    public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
     # filter
     objs = {
       "project" => Project,
@@ -72,7 +89,7 @@ class WorksController < ApplicationController
       "owner" => Owner
     }
     if params["filter"].nil?
-      filtered_works = Work.all
+      filtered_works = public_works
     else
       filter = {}
       JSON.parse(params["filter"]).each do |name, value|
@@ -85,7 +102,7 @@ class WorksController < ApplicationController
           filter[name] = value
         end
       end
-      filtered_works = Work.where filter
+      filtered_works = public_works.where filter
     end
     # search
     if params["search"].empty?
@@ -136,6 +153,7 @@ class WorksController < ApplicationController
 
   def new
     @work = Work.new
+    @owner = (logged_in? ? current_user : nil)
   end
 
   def create
