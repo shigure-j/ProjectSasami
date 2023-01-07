@@ -1,0 +1,57 @@
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editModalLabel">Edit selected works</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="edit_option" id="delete_work" value="delete" checked>
+          <label class="form-check-label" for="delete_work">
+            Delete
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="edit_option" id="set_public_work" value="public">
+          <label class="form-check-label" for="set_public_work">
+            Set to public
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="edit_option" id="set_private_work" value="private">
+          <label class="form-check-label" for="set_private_work">
+            Set to private
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button onclick="editWork();" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editResultModal">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editResultModal" tabindex="-1" aria-labelledby="editResultModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editResultModalLabel">Result</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <turbo-frame id="edit_result">
+        </turbo-frame>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('editResultModal').addEventListener('hide.bs.modal', event => {
+    window.location.reload()
+  })
+</script>

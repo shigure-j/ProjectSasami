@@ -33,13 +33,13 @@ format.format = %q({
         "type": "path",
         "option": ""
     },
-    "start_time": {
+    "created_at": {
         "type": "datetime",
         "option": "yyyy/MM/dd HH:mm"
     },
-    "end_time": {
-        "type": "datetime",
-        "option": "yyyy/MM/dd HH:mm"
+    "is_private": {
+        "type": "boolean",
+        "option": ""
     }
 })
 format.save

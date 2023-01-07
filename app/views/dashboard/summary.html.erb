@@ -17,6 +17,7 @@
       <div class="row py-1">
         <div class="col">
           <button onclick="loadWork(0, 1)" type="button" class="btn btn-secondary">Show</button>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
         </div>
         <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
       </div>
@@ -24,3 +25,5 @@
     </div>
   </div>
 </div>
+
+<%= render partial: "edit" %>

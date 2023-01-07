@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   resources :works, only: [:new, :create, :show]
   get "data/summary", to: "works#get_summary"
   get "data/work", to: "works#get_work"
+  get "data/edit", to: "works#edit"
+  get "data/delete", to: "works#delete"
   get "detail", to: "dashboard#detail"
   get "summary", to: "dashboard#summary"
 

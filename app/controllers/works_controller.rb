@@ -1,6 +1,50 @@
 class WorksController < ApplicationController
   protect_from_forgery :except => [:create]
 
+  def edit
+    @message = []
+    unless logged_in?
+      @message << "You need login"
+    else
+      works = Work.find params[:works].split(",")
+      other_works = works.select {|work| ! work.owner.eql? current_user}
+      unless other_works.empty?
+        @message << "Failed to edit #{other_works.size} works of others owners."
+      end
+      works -= other_works
+      if works.empty?
+        @message << "No works changed."
+      else
+        @message << "Changed #{works.size} works to #{params[:is_private].eql?("1") ? "private" : "public"}."
+        works.each { |work| work.update is_private: params[:is_private] }
+      end
+    end
+
+    render :result
+  end
+
+  def delete
+    @message = []
+    unless logged_in?
+      @message << "You need login"
+    else
+      works = Work.find params[:works].split(",")
+      other_works = works.select {|work| ! work.owner.eql? current_user}
+      unless other_works.empty?
+        @message << "Failed to delete #{other_works.size} works of others owners."
+      end
+      works -= other_works
+      if works.empty?
+        @message << "No works deleted."
+      else
+        @message << "deleted #{works.size} works."
+        works.map(&:delete)
+      end
+    end
+
+    render :result
+  end
+
   def get_work
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
 

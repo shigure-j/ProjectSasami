@@ -30,12 +30,14 @@ class OwnerSessionsController < ApplicationController
         @owner = Owner.new name: owner_params[:name], signature: signature
         @owner.save
         auto_login @owner
+        remember_me!
         @message = "Create new user #{@owner.name}"
       elsif !@owner.signature.eql? signature
         @owner = nil
         @message = "Signature mismatch"
       else
         auto_login @owner
+        remember_me!
         @message = "Login as #{@owner.name}"
       end
     end

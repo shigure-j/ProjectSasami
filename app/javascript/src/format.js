@@ -41,6 +41,14 @@ window.cellFormatter = function(type, opt, add) {
       return function(value, row, index, field) {
         return add[field][value.split(":")[1]]
       }
+    case "boolean":
+      return function(value) {
+        if (value == "true" || value == "1") {
+          return '<i class="bi bi-check-circle-fill">true</i>'
+        } else {
+          return '<i class="bi bi-x-circle">false</i>'
+        }
+      }
     default:
       return function(value) {
         return value
@@ -63,6 +71,22 @@ window.replaceParamVal = function(paramName,replaceWith) {
   //this.location = nUrl;
   //window.location.href=nUrl
   history.replaceState(0,0,nUrl);
+}
+
+window.editWork = function() {
+  $table = $('#dashboard_view')
+  work_ids = $table.bootstrapTable('getSelections').map(function(row) {return row.id})
+  switch($("input[name='edit_option']:checked").val()) {
+    case "delete":
+      $("#edit_result").attr("src", "/data/delete?works="+ work_ids.join(","))
+      break;
+    case "public":
+      $("#edit_result").attr("src", "/data/edit?is_private=0&works="+ work_ids.join(","))
+      break;
+    case "private":
+      $("#edit_result").attr("src", "/data/edit?is_private=1&works="+ work_ids.join(","))
+      break;
+  }
 }
 
 window.loadWork = function(incr, redirect) {

@@ -8,6 +8,7 @@
       <div class="col">
         <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks" onclick="loadWork(0)" type="button" class="btn btn-secondary">Show</button>
         <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks" onclick="loadWork(1)" type="button" class="btn btn-secondary">Add</button>
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
       </div>
       <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
     </div>
@@ -57,3 +58,5 @@
     </div>
   </div>
 </div>
+
+<%= render partial: "edit" %>

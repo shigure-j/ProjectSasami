@@ -7,10 +7,9 @@
     <% end %>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
-  <div class="modal-body">
-    <div>
-      <% if @owner.nil? %>
-        <%= form_with url: login_path, method: :post, id: "login_form", local: false do |form| %>
+    <% if @owner.nil? %>
+      <%= form_with url: login_path, method: :post, id: "login_form", local: false do |form| %>
+        <div class="modal-body">
           <div class="form-floating mb-3">
             <input placeholder="" type="text" class="form-control" id="name" name="name">
             <label for="work_name">Name</label>
@@ -22,11 +21,20 @@
           <div>
             <span class="badge text-bg-danger"><%= @message %></span>
           </div>
-          <%= form.submit "Login", class: "btn btn-primary my-2" %>
-        <% end %>
-      <% else %>
-        <a href="/logout" type="button" value="Logout" class="btn btn-primary my-2">Logout</a>
+        </div>
+        <div class="modal-footer">
+          <%= form.submit "Login", class: "btn btn-primary" %>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
       <% end %>
-    </div>
+    <% else %>
+      <div class="modal-body">
+        <span>Logout?</span>
+      </div>
+      <div class="modal-footer">
+        <a href="/logout" type="button" value="Logout" class="btn btn-primary my-2">Logout</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    <% end %>
   </div>
 </turbo-frame>
