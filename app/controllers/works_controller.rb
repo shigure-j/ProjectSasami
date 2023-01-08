@@ -158,23 +158,26 @@ class WorksController < ApplicationController
       end
     end
     # sort
-    unless params["sort"].nil?
+    sort_obj = nil
+    if params["sort"].nil?
+      sort_key = "created_at"
+      sort_order = "desc"
+    else
       sort_key = params["sort"]
-      sort_obj = nil
-      if objs.key?(params["sort"])
-        sort_obj = objs[params["sort"]]
-        sort_key += "_id"
+      sort_order = params["order"]
+    end
+    if objs.key?(sort_key)
+      sort_obj = objs[sort_key]
+    end
+    works = works.sort_by do |work|
+      if sort_obj.nil?
+        work.attribute_in_database(sort_key)
+      else
+        work.instance_eval(sort_key).name
       end
-      works = works.sort_by do |work|
-        if sort_obj.nil?
-          work.attribute_in_database(sort_key)
-        else
-          sort_obj.find(work.attribute_in_database(sort_key)).name
-        end
-      end
-      if params["order"].eql?("desc")
-        works.reverse!
-      end
+    end
+    if sort_order.eql?("desc")
+      works.reverse!
     end
     # output
     total = Work.count
@@ -232,10 +235,10 @@ class WorksController < ApplicationController
     end
 
     signature = work_params[:signature].read
-    owner = Owner.find_by(signature: signature)
+    owner = Owner.find_by(name: work_params[:owner])
     if owner.nil?
       owner = Owner.new name: work_params[:owner], signature: signature
-    elsif !owner.name.eql? work_params[:owner]
+    elsif !owner.signature.eql? signature
       respond_to do |res|
         res.html { render :new, status: :unprocessable_entity }
         res.json { render json: {status: :failed, message: "User name and signature mismatch"} }

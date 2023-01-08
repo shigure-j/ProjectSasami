@@ -77,29 +77,28 @@
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingTwo">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            Batch upload
+            Or use batch upload script
           </button>
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-            <p> curl -X POST server/works \ </p>
-            <p>     -F "work[name]=test" \ </p>
-            <p>     -F "work[project]=MC50" \ </p>
-            <p>     -F "work[design]=test_design" \ </p>
-            <p>     -F "work[owner]=j" \ </p>
-            <p>     -F "work[stage]=syn" \ </p>
-            <p>     -F "work[path]=test_path/a/b/c"\ </p>
-            <p>     -F "work[start_time(1i)]=2022" \ </p>
-            <p>     -F "work[start_time(2i)]=10" \ </p>
-            <p>     -F "work[start_time(3i)]=18" \ </p>
-            <p>     -F "work[start_time(4i)]=11" \ </p>
-            <p>     -F "work[start_time(5i)]=12" \ </p>
-            <p>     -F "work[end_time(1i)]=2022" \ </p>
-            <p>     -F "work[end_time(2i)]=10" \ </p>
-            <p>     -F "work[end_time(3i)]=19" \ </p>
-            <p>     -F "work[end_time(4i)]=13" \ </p>
-            <p>     -F "work[end_time(5i)]=14" \ </p>
-            <p>     -F "work[data]=@test_input/test.flat.json" </p>
+            <div class="alert alert-secondary" role="alert">
+              <a href="/upload.rb" download="upload.rb" class="alert-link">Download</a> the upload script.
+              Use <code>upload.rb --help</code> to show usage.
+            </div>
+            <span class="badge bg-secondary">Example</span>
+            <pre><code>
+upload.rb \
+  --name testtt4 \
+  --path work_dir/a/b \
+  --stage syn \
+  --project mc50 \
+  --design test_design \
+  --data data.json \
+  --picture pic0.jpg \
+  --picture pic1.jpg \
+  [--private]
+            </code></pre>
           </div>
         </div>
       </div>
@@ -111,108 +110,52 @@
         </h2>
         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-            <p> [ </p>
-            <p>     { </p>
-            <p>         "key": "area", </p>
-            <p>         "value": "224" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "vpn", </p>
-            <p>         "value": "8", </p>
-            <p>         "scenario": "ffgnpbbb", </p>
-            <p>         "type": "hold", </p>
-            <p>         "pba": "gba", </p>
-            <p>         "group": "B" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "tns", </p>
-            <p>         "value": "11", </p>
-            <p>         "scenario": "ffgnpbbb", </p>
-            <p>         "type": "hold", </p>
-            <p>         "pba": "gba", </p>
-            <p>         "group": "C" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "wns", </p>
-            <p>         "value": "2", </p>
-            <p>         "scenario": "ffgnpaaa", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "gba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "vpn", </p>
-            <p>         "value": "55", </p>
-            <p>         "scenario": "ssgnpaaa", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "gba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "tns", </p>
-            <p>         "value": "45", </p>
-            <p>         "scenario": "ssgnpaaa", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "gba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "wns", </p>
-            <p>         "value": "52", </p>
-            <p>         "scenario": "ssgnpaaa", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "gba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "vpn", </p>
-            <p>         "value": "63", </p>
-            <p>         "scenario": "ffgnpaaa", </p>
-            <p>         "type": "hold", </p>
-            <p>         "pba": "pba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "tns", </p>
-            <p>         "value": "74", </p>
-            <p>         "scenario": "ffgnpaaa", </p>
-            <p>         "type": "hold", </p>
-            <p>         "pba": "pba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "wns", </p>
-            <p>         "value": "106", </p>
-            <p>         "scenario": "ffgnpaaa", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "pba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "vpn", </p>
-            <p>         "value": "96", </p>
-            <p>         "scenario": "ssgnpbbb", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "pba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "tns", </p>
-            <p>         "value": "97", </p>
-            <p>         "scenario": "ssgnpbbb", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "pba", </p>
-            <p>         "group": "A" </p>
-            <p>     }, </p>
-            <p>     { </p>
-            <p>         "key": "wns", </p>
-            <p>         "value": "91", </p>
-            <p>         "scenario": "ssgnpaaa", </p>
-            <p>         "type": "setup", </p>
-            <p>         "pba": "pba", </p>
-            <p>         "group": "A" </p>
-            <p>     } </p>
-            <p> ] </p>
+            <div class="alert alert-secondary" role="alert">
+              The <code>"key"</code> and <code>"value"</code> key-value pairs is required, and you also cao add any other key-value pair to every record
+            </div>
+            <span class="badge bg-secondary">Example</span>
+            <pre><code>
+[
+    {
+        "key": "area",
+        "value": "3412"
+    },
+    {
+        "key": "max-frequency",
+        "value": "800M"
+    },
+    {
+        "key": "tns",
+        "value": "9999",
+        "type": "setup"
+    },
+    {
+        "key": "wns",
+        "value": "999",
+        "type": "setup"
+    },
+    {
+        "key": "wns",
+        "value": "27",
+        "type": "setup",
+        "group": "B"
+    },
+    {
+        "key": "congestion",
+        "value": "picture:0"
+    },
+    {
+        "key": "density",
+        "value": "picture:1"
+    },
+    {
+        "key": "wns",
+        "value": "27",
+        "some_type_a": "value_a",
+        "soem_type_b": "value_b"
+    }
+]
+            </code></pre>
           </div>
         </div>
       </div>
