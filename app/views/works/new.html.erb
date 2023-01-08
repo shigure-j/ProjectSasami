@@ -32,12 +32,6 @@
                 <%= form.check_box :is_private, class: "form-check-input", id: "check_is_private" %>
                 <label class="form-check-label" for="check_is_private"> Private </label>
               </div>
-              <% [:start_time, :end_time].each do |input| %>
-                <div class="mb-3">
-                  <%= form.label input, class: "form-label" %><br>
-                  <%= form.datetime_select input %>
-                </div>
-              <% end %>
               <div class="mb-3">
                 <label for="input_data_json" class="form-label"> Data JSON </label>
                 <%= form.file_field :data, class: "form-control", id: "input_data_json" %>

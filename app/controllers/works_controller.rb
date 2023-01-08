@@ -59,7 +59,7 @@ class WorksController < ApplicationController
     works_data = works.map {|work| JSON.parse Zlib::inflate(work.data.download)}
     works_pics = works.map do |work|
       work.pictures.map do |pic| 
-        view_context.image_tag pic, size: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
+        view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
       end
     end
     table_id = "work_table"
