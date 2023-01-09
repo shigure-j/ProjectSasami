@@ -12,6 +12,15 @@ table_opt["height"] = window.innerHeight - 100
 $table.bootstrapTable("destroy")
 $table.bootstrapTable(table_opt)
 
+$nav = $("#sub_tables_nav")
+$nav.replaceWith('<ul class="nav nav-tabs" id="sub_tables_nav"></ul>')
+$nav = $("#sub_tables_nav")
+<% @sub_tables.each do |n_table| %>
+  //$nav.append('<li class="nav-item"><a id="sub_table_of_<%= n_table %>" class="nav-link" href="?works=<%= @works.map(&:id).join "," %>&sub=<%= n_table %>"><%= n_table %></a></li>')
+  $nav.append('<li class="nav-item"><a id="sub_table_of_<%= n_table %>" class="nav-link" onclick="changeSub(\'<%= n_table %>\')"><%= n_table %></a></li>')
+<% end %>
+$("#sub_table_of_<%= @sub_table %>").addClass("active")
+
 //// Clipboard
 //var clipboard = new ClipboardJS(".btn")
 //clipboard.on('success', function(e) {

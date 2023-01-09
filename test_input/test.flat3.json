@@ -1,69 +1,109 @@
-[
-    {
-        "key": "area",
-        "value": "3412"
-    },
-    {
-        "key": "max-frequency",
-        "value": "800M"
-    },
-    {
-        "key": "clock-gating-rate",
-        "value": "90%"
-    },
-    {
-        "key": "multibit-rate",
-        "value": "80%"
-    },
-    {
-        "key": "vpn",
-        "value": "99",
-        "type": "setup"
-    },
-    {
-        "key": "tns",
-        "value": "9999",
-        "type": "setup"
-    },
-    {
-        "key": "wns",
-        "value": "999",
-        "type": "setup"
-    },
-    {
-        "key": "vpn",
-        "value": "95",
-        "type": "setup",
-        "group": "B"
-    },
-    {
-        "key": "tns",
-        "value": "85",
-        "type": "setup",
-        "group": "B"
-    },
-    {
-        "key": "wns",
-        "value": "27",
-        "type": "setup",
-        "group": "B"
-    },
-    {
-        "key": "vpn",
-        "value": "195",
-        "type": "setup",
-        "group": "A"
-    },
-    {
-        "key": "tns",
-        "value": "875",
-        "type": "setup",
-        "group": "A"
-    },
-    {
-        "key": "wns",
-        "value": "877",
-        "type": "setup",
-        "group": "A"
-    }
-]
+{
+    "main": [
+        {
+            "key": "area",
+            "value": "3412"
+        },
+        {
+            "key": "max-frequency",
+            "value": "800M"
+        },
+        {
+            "key": "clock-gating-rate",
+            "value": "90%"
+        },
+        {
+            "key": "multibit-rate",
+            "value": "80%"
+        },
+        {
+            "key": "vpn",
+            "value": "99",
+            "type": "setup"
+        },
+        {
+            "key": "tns",
+            "value": "9999",
+            "type": "setup"
+        },
+        {
+            "key": "wns",
+            "value": "999",
+            "type": "setup"
+        },
+        {
+            "key": "vpn",
+            "value": "95",
+            "type": "setup",
+            "group": "B"
+        },
+        {
+            "key": "tns",
+            "value": "85",
+            "type": "setup",
+            "group": "B"
+        },
+        {
+            "key": "wns",
+            "value": "27",
+            "type": "setup",
+            "group": "B"
+        },
+        {
+            "key": "vpn",
+            "value": "195",
+            "type": "setup",
+            "group": "A"
+        },
+        {
+            "key": "tns",
+            "value": "875",
+            "type": "setup",
+            "group": "A"
+        },
+        {
+            "key": "wns",
+            "value": "877",
+            "type": "setup",
+            "group": "A"
+        }
+    ],
+    "sub": [
+        {
+            "key": "vpn",
+            "value": "95",
+            "type": "setup",
+            "group": "B"
+        },
+        {
+            "key": "tns",
+            "value": "85",
+            "type": "setup",
+            "group": "B"
+        },
+        {
+            "key": "wns",
+            "value": "27",
+            "type": "setup",
+            "group": "B"
+        },
+        {
+            "key": "vpn",
+            "value": "195",
+            "type": "setup",
+            "group": "A"
+        },
+        {
+            "key": "tns",
+            "value": "875",
+            "type": "setup",
+            "group": "A"
+        },
+        {
+            "key": "wns",
+            "value": "877",
+            "type": "setup",
+            "group": "A"
+        }
+    ]
+}

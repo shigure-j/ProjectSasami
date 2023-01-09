@@ -38,7 +38,7 @@ class WorksController < ApplicationController
         @message << "No works deleted."
       else
         @message << "deleted #{works.size} works."
-        works.map(&:delete)
+        works.map(&:destroy)
       end
     end
 
@@ -49,15 +49,17 @@ class WorksController < ApplicationController
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
 
     begin
-      works = public_works.find params[:works].split(",")
+      @works = public_works.find params[:works].split(",")
     rescue
       #ActiveRecord::RecordNotFound
       render js: 'alert("Invalid request!");'
       return
     end
 
-    works_data = works.map {|work| JSON.parse Zlib::inflate(work.data.download)}
-    works_pics = works.map do |work|
+    works_data = @works.map {|work| JSON.parse Zlib::inflate(work.data.download)}
+    @sub_tables = works_data.map(&:keys).flatten.uniq
+    @sub_table = params[:sub] || @sub_tables.first
+    works_pics = @works.map do |work|
       work.pictures.map do |pic| 
         view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
       end
@@ -67,8 +69,9 @@ class WorksController < ApplicationController
     # Get all index
     indexes = []
     merge_data = {}
-    works.each_with_index do |work, index|
-      work_data = works_data[index]
+    @works.each_with_index do |work, index|
+      work_data = works_data[index][@sub_table]
+      next if work_data.nil?
       work_data.each do |record|
         value = record.delete "value"
         indexes += record.keys
@@ -100,7 +103,7 @@ class WorksController < ApplicationController
     columns = indexes.map { |idx| { field: idx, title: idx }.merge common_col_opt }
     columns << { field: :key, title: :key }.merge(common_col_opt)
     fix_cols = columns.size
-    columns += works.map { |work| { field: work.id, title: work.name }.merge common_col_opt }
+    columns += @works.map { |work| { field: work.id, title: work.name }.merge common_col_opt }
     #columns += works.map { |work| { field: work.id, title: work.name } }
     respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_table}
 

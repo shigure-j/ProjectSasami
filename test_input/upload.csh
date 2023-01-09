@@ -1,130 +1,51 @@
-curl -X POST 127.0.0.1:3000/works \
-    --header "Accept: application/json" \
-    -F "work[signature]=@/home/shigure/.sasami_key" \
-    -F "work[name]=test" \
-    -F "work[project]=p60" \
-    -F "work[design]=test_design" \
-    -F "work[owner]=shigure" \
-    -F "work[stage]=sta" \
-    -F "work[path]=test_path/a/b/c"\
-    -F "work[start_time(1i)]=2022" \
-    -F "work[start_time(2i)]=10" \
-    -F "work[start_time(3i)]=18" \
-    -F "work[start_time(4i)]=11" \
-    -F "work[start_time(5i)]=12" \
-    -F "work[end_time(1i)]=2022" \
-    -F "work[end_time(2i)]=10" \
-    -F "work[end_time(3i)]=19" \
-    -F "work[end_time(4i)]=13" \
-    -F "work[end_time(5i)]=14" \
-    -F "work[data]=@test_input/test.flat.json"
+./public/upload.rb \
+    --name test \
+    --project p60 \
+    --design test_design \
+    --stage sta \
+    --path  /home/jiangxi/rails/bootstrap-table-dev/ \
+    --data test_input/test.flat.json
 
-curl -X POST 127.0.0.1:3000/works \
-    --header "Accept: application/json" \
-    -F "work[signature]=@/home/shigure/.sasami_key" \
-    -F "work[name]=test" \
-    -F "work[project]=p20" \
-    -F "work[design]=test_core" \
-    -F "work[owner]=shigure" \
-    -F "work[stage]=sta" \
-    -F "work[path]=test_path/B/b/c"\
-    -F "work[start_time(1i)]=2022" \
-    -F "work[start_time(2i)]=10" \
-    -F "work[start_time(3i)]=18" \
-    -F "work[start_time(4i)]=11" \
-    -F "work[start_time(5i)]=12" \
-    -F "work[end_time(1i)]=2022" \
-    -F "work[end_time(2i)]=10" \
-    -F "work[end_time(3i)]=19" \
-    -F "work[end_time(4i)]=13" \
-    -F "work[end_time(5i)]=14" \
-    -F "work[data]=@test_input/test.flat2.json"
+./public/upload.rb \
+    --name test \
+    --project p20 \
+    --design test_core \
+    --stage sta \
+    --path  /home/jiangxi/axpi_dev/ \
+    --data test_input/test.flat2.json
 
-curl -X POST 127.0.0.1:3000/works \
-    --header "Accept: application/json" \
-    -F "work[signature]=@/home/shigure/.sasami_key" \
-    -F "work[name]=stest" \
-    -F "work[project]=p20" \
-    -F "work[design]=test_design" \
-    -F "work[owner]=shigure" \
-    -F "work[stage]=syn" \
-    -F "work[path]=work/22223"\
-    -F "work[start_time(1i)]=2022" \
-    -F "work[start_time(2i)]=10" \
-    -F "work[start_time(3i)]=18" \
-    -F "work[start_time(4i)]=11" \
-    -F "work[start_time(5i)]=12" \
-    -F "work[end_time(1i)]=2022" \
-    -F "work[end_time(2i)]=10" \
-    -F "work[end_time(3i)]=19" \
-    -F "work[end_time(4i)]=13" \
-    -F "work[end_time(5i)]=14" \
-    -F "work[data]=@test_input/test.flat3.json"
+./public/upload.rb \
+    --name stest \
+    --project p20 \
+    --design test_design \
+    --stage syn \
+    --path  /home/jiangxi/test/ \
+    --data test_input/test.flat3.json
 
-curl -X POST 127.0.0.1:3000/works \
-    --header "Accept: application/json" \
-    -F "work[signature]=@/home/shigure/.sasami_key" \
-    -F "work[name]=pic" \
-    -F "work[project]=mp80" \
-    -F "work[design]=t_core" \
-    -F "work[owner]=shigure" \
-    -F "work[stage]=layout" \
-    -F "work[path]=Work/22i4"\
-    -F "work[start_time(1i)]=2023" \
-    -F "work[start_time(2i)]=1" \
-    -F "work[start_time(3i)]=8" \
-    -F "work[start_time(4i)]=1" \
-    -F "work[start_time(5i)]=2" \
-    -F "work[end_time(1i)]=2023" \
-    -F "work[end_time(2i)]=2" \
-    -F "work[end_time(3i)]=9" \
-    -F "work[end_time(4i)]=3" \
-    -F "work[end_time(5i)]=4" \
-    -F "work[data]=@test_input/test.flat4.pic.json" \
-    -F "work[pictures][]=" \
-    -F "work[pictures][]=@/mnt/e/Game/Steam/userdata/65512487/760/remote/1475810/screenshots/20221205010408_1.jpg" \
-    -F "work[pictures][]=@/mnt/e/Game/Steam/userdata/65512487/760/remote/1475810/screenshots/20221205012654_1.jpg"
+./public/upload.rb \
+    --name pic \
+    --project mp80 \
+    --design t_core \
+    --stage layout \
+    --path  /home/jiangxi/rails/sheet_view/ \
+    --data test_input/test.flat4.pic.json \
+    --picture "/mnt/c/Users/jiangxi/Pictures/Screenshots/屏幕截图_20221101_153610.png" \
+    --picture "/mnt/c/Users/jiangxi/Pictures/屏幕截图 2021-01-20 101622.png"
 
-curl -X POST 127.0.0.1:3000/works \
-    --header "Accept: application/json" \
-    -F "work[signature]=@/home/shigure/.sasami_key" \
-    -F "work[is_private]=true" \
-    -F "work[name]=test" \
-    -F "work[project]=p60" \
-    -F "work[design]=test_design" \
-    -F "work[owner]=shigure" \
-    -F "work[stage]=sta" \
-    -F "work[path]=test_path/a/b/c"\
-    -F "work[start_time(1i)]=2022" \
-    -F "work[start_time(2i)]=10" \
-    -F "work[start_time(3i)]=18" \
-    -F "work[start_time(4i)]=11" \
-    -F "work[start_time(5i)]=12" \
-    -F "work[end_time(1i)]=2022" \
-    -F "work[end_time(2i)]=10" \
-    -F "work[end_time(3i)]=19" \
-    -F "work[end_time(4i)]=13" \
-    -F "work[end_time(5i)]=14" \
-    -F "work[data]=@test_input/test.flat.json"
+./public/upload.rb \
+    --private \
+    --name test \
+    --project p60 \
+    --design test_design \
+    --stage sta \
+    --path  /home/jiangxi/circt/ \
+    --data test_input/test.flat.json
 
-curl -X POST 127.0.0.1:3000/works \
-    --header "Accept: application/json" \
-    -F "work[signature]=@/home/shigure/.sasami_key" \
-    -F "work[is_private]=true" \
-    -F "work[name]=test" \
-    -F "work[project]=p20" \
-    -F "work[design]=test_core" \
-    -F "work[owner]=shigure" \
-    -F "work[stage]=sta" \
-    -F "work[path]=test_path/B/b/c"\
-    -F "work[start_time(1i)]=2022" \
-    -F "work[start_time(2i)]=10" \
-    -F "work[start_time(3i)]=18" \
-    -F "work[start_time(4i)]=11" \
-    -F "work[start_time(5i)]=12" \
-    -F "work[end_time(1i)]=2022" \
-    -F "work[end_time(2i)]=10" \
-    -F "work[end_time(3i)]=19" \
-    -F "work[end_time(4i)]=13" \
-    -F "work[end_time(5i)]=14" \
-    -F "work[data]=@test_input/test.flat2.json"
+./public/upload.rb \
+    --private \
+    --name test \
+    --project p20 \
+    --design test_core \
+    --stage sta \
+    --path  /home/jiangxi/work/ \
+    --data test_input/test.flat2.json

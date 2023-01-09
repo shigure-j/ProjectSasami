@@ -1,102 +1,106 @@
-[
-    {
-        "key": "area",
-        "value": "3412"
-    },
-    {
-        "key": "vpn",
-        "value": "4",
-        "scenario": "ffgnpaaa",
-        "type": "hold",
-        "pba": "gba",
-        "group": "A"
-    },
-    {
-        "key": "tns",
-        "value": "11",
-        "scenario": "ffgnpaaa",
-        "type": "hold",
-        "pba": "gba",
-        "group": "A"
-    },
-    {
-        "key": "wns",
-        "value": "2",
-        "scenario": "ffgnpaaa",
-        "type": "setup",
-        "pba": "gba",
-        "group": "A"
-    },
-    {
-        "key": "vpn",
-        "value": "55",
-        "scenario": "ssgnpaaa",
-        "type": "setup",
-        "pba": "gba",
-        "group": "A"
-    },
-    {
-        "key": "tns",
-        "value": "45",
-        "scenario": "ssgnpaaa",
-        "type": "setup",
-        "pba": "gba",
-        "group": "A"
-    },
-    {
-        "key": "wns",
-        "value": "2",
-        "scenario": "ssgnpaaa",
-        "type": "setup",
-        "pba": "gba",
-        "group": "A"
-    },
-    {
-        "key": "vpn",
-        "value": "3",
-        "scenario": "ffgnpaaa",
-        "type": "hold",
-        "pba": "pba",
-        "group": "A"
-    },
-    {
-        "key": "tns",
-        "value": "4",
-        "scenario": "ffgnpaaa",
-        "type": "hold",
-        "pba": "pba",
-        "group": "A"
-    },
-    {
-        "key": "wns",
-        "value": "6",
-        "scenario": "ffgnpaaa",
-        "type": "setup",
-        "pba": "pba",
-        "group": "A"
-    },
-    {
-        "key": "vpn",
-        "value": "6",
-        "scenario": "ssgnpaaa",
-        "type": "setup",
-        "pba": "pba",
-        "group": "A"
-    },
-    {
-        "key": "tns",
-        "value": "7",
-        "scenario": "ssgnpaaa",
-        "type": "setup",
-        "pba": "pba",
-        "group": "A"
-    },
-    {
-        "key": "wns",
-        "value": "8",
-        "scenario": "ssgnpaaa",
-        "type": "setup",
-        "pba": "pba",
-        "group": "A"
-    }
-]
+{
+    "main": [
+        {
+            "key": "area",
+            "value": "3412"
+        }
+    ],
+    "sub": [
+        {
+            "key": "vpn",
+            "value": "4",
+            "scenario": "ffgnpaaa",
+            "type": "hold",
+            "pba": "gba",
+            "group": "A"
+        },
+        {
+            "key": "tns",
+            "value": "11",
+            "scenario": "ffgnpaaa",
+            "type": "hold",
+            "pba": "gba",
+            "group": "A"
+        },
+        {
+            "key": "wns",
+            "value": "2",
+            "scenario": "ffgnpaaa",
+            "type": "setup",
+            "pba": "gba",
+            "group": "A"
+        },
+        {
+            "key": "vpn",
+            "value": "55",
+            "scenario": "ssgnpaaa",
+            "type": "setup",
+            "pba": "gba",
+            "group": "A"
+        },
+        {
+            "key": "tns",
+            "value": "45",
+            "scenario": "ssgnpaaa",
+            "type": "setup",
+            "pba": "gba",
+            "group": "A"
+        },
+        {
+            "key": "wns",
+            "value": "2",
+            "scenario": "ssgnpaaa",
+            "type": "setup",
+            "pba": "gba",
+            "group": "A"
+        },
+        {
+            "key": "vpn",
+            "value": "3",
+            "scenario": "ffgnpaaa",
+            "type": "hold",
+            "pba": "pba",
+            "group": "A"
+        },
+        {
+            "key": "tns",
+            "value": "4",
+            "scenario": "ffgnpaaa",
+            "type": "hold",
+            "pba": "pba",
+            "group": "A"
+        },
+        {
+            "key": "wns",
+            "value": "6",
+            "scenario": "ffgnpaaa",
+            "type": "setup",
+            "pba": "pba",
+            "group": "A"
+        },
+        {
+            "key": "vpn",
+            "value": "6",
+            "scenario": "ssgnpaaa",
+            "type": "setup",
+            "pba": "pba",
+            "group": "A"
+        },
+        {
+            "key": "tns",
+            "value": "7",
+            "scenario": "ssgnpaaa",
+            "type": "setup",
+            "pba": "pba",
+            "group": "A"
+        },
+        {
+            "key": "wns",
+            "value": "8",
+            "scenario": "ssgnpaaa",
+            "type": "setup",
+            "pba": "pba",
+            "group": "A"
+        }
+    ]
+}
