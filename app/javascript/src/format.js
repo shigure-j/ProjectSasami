@@ -66,8 +66,12 @@ window.setColAsGroup = function(row, element, field, table) {
 
 window.replaceParamVal = function(paramName,replaceWith) {
   var oUrl = this.location.href.toString();
-  var re=eval('/('+ paramName+'=)([^&]*)/gi');
-  var nUrl = oUrl.replace(re,paramName+'='+replaceWith);
+  if(oUrl.split("?")[1].match(paramName + "=")) {
+    var re=eval('/('+ paramName+'=)([^&]*)/gi');
+    var nUrl = oUrl.replace(re,paramName+'='+replaceWith);
+  } else {
+    var nUrl = oUrl + "&" + paramName + "=" + replaceWith
+  }
   //this.location = nUrl;
   //window.location.href=nUrl
   history.replaceState(0,0,nUrl);
