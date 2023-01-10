@@ -56,9 +56,16 @@ class WorksController < ApplicationController
       return
     end
 
-    works_data = @works.map {|work| JSON.parse Zlib::inflate(work.data.download)}
-    @sub_tables = works_data.map(&:keys).flatten.uniq
-    @sub_table = params[:sub] || @sub_tables.first
+    @sub_tables = @works.map {|work| work.query_sub_table}.flatten.uniq.map {|n| [n, false]}.to_h
+    if params[:sub].nil?
+      @sub_tables[@sub_tables.keys.first] = true
+    else
+      params[:sub].split(",").each do |sub|
+        if @sub_tables.key? sub
+          @sub_tables[sub] = true
+        end
+      end
+    end
     works_pics = @works.map do |work|
       work.pictures.map do |pic| 
         view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
@@ -70,19 +77,22 @@ class WorksController < ApplicationController
     indexes = []
     merge_data = {}
     @works.each_with_index do |work, index|
-      work_data = works_data[index][@sub_table]
-      next if work_data.nil?
-      work_data.each do |record|
-        value = record.delete "value"
-        indexes += record.keys
-        pic_flag, pic_no = value.split(":")
-        if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
-          value = works_pics[index][pic_no.to_i]
-        end
-        if merge_data[record].nil? 
-          merge_data[record] = {work.id => value}
-        else
-          merge_data[record][work.id] = value
+      @sub_tables.select {|k, v| v}.keys.each do |sub_table|
+        sub_table_data = work.query_sub_table sub_table
+        next if sub_table_data.nil?
+        work_data = JSON.parse Zlib::inflate(sub_table_data.download)
+        work_data.each do |record|
+          value = record.delete "value"
+          indexes += record.keys
+          pic_flag, pic_no = value.split(":")
+          if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
+            value = works_pics[index][pic_no.to_i]
+          end
+          if merge_data[record].nil? 
+            merge_data[record] = {work.id => value}
+          else
+            merge_data[record][work.id] = value
+          end
         end
       end
     end
@@ -120,13 +130,6 @@ class WorksController < ApplicationController
 
   def get_summary
     #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
-    #
-    #private_works = Work.where is_private: true
-    #if logged_in?
-    #  owner_works = private_works.where owner: current_user
-    #  private_works.excluding! owner_works
-    #end
-    #public_works = Work.excluding private_works
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
     # filter
     objs = {
@@ -209,10 +212,7 @@ class WorksController < ApplicationController
   def create
     i_params = work_params
     data_content = JSON.parse(work_params[:data].read)
-
-    comp_file = Tempfile.new(encoding: 'ascii-8bit')
-    comp_file.write Zlib::deflate(data_content.to_json)
-    i_params[:data].tempfile = comp_file
+    i_params.delete :data
 
     unless i_params[:picture].nil?
       i_params[:pictures].shift
@@ -229,24 +229,28 @@ class WorksController < ApplicationController
       i_params[obj_class_name.to_sym] = obj
     end
 
-    if work_params[:signature].nil?
-      respond_to do |res|
-        res.html { render :new, status: :unprocessable_entity }
-        res.json { render json: {status: :failed, message: "No user signature"} }
+    if logged_in?
+      owner = current_user
+    else
+      if work_params[:signature].nil?
+        respond_to do |res|
+          res.html { render :new, status: :unprocessable_entity }
+          res.json { render json: {status: :failed, message: "No user signature"} }
+        end
+        return
       end
-      return
-    end
 
-    signature = work_params[:signature].read
-    owner = Owner.find_by(name: work_params[:owner])
-    if owner.nil?
-      owner = Owner.new name: work_params[:owner], signature: signature
-    elsif !owner.signature.eql? signature
-      respond_to do |res|
-        res.html { render :new, status: :unprocessable_entity }
-        res.json { render json: {status: :failed, message: "User name and signature mismatch"} }
+      signature = work_params[:signature].read
+      owner = Owner.find_by(name: work_params[:owner])
+      if owner.nil?
+        owner = Owner.new name: work_params[:owner], signature: signature
+      elsif !owner.signature.eql? signature
+        respond_to do |res|
+          res.html { render :new, status: :unprocessable_entity }
+          res.json { render json: {status: :failed, message: "User name and signature mismatch"} }
+        end
+        return
       end
-      return
     end
     i_params.delete :signature
     i_params[:owner] = owner
@@ -264,6 +268,21 @@ class WorksController < ApplicationController
 
     @work = Work.new(i_params)
 
+    comp_files = []
+    @work.datas.attach(
+      data_content.map do |sub_table, data|
+        comp_files << Tempfile.create(encoding: 'ascii-8bit')
+        comp_files.last.write Zlib::deflate(data.to_json)
+        comp_files.last.rewind
+        {
+          io: comp_files.last,
+          filename: sub_table,
+          content_type: "application/json",
+          identify: false
+        }
+      end
+    )
+
     if @work.save
       respond_to do |res|
         res.html { redirect_to @work }
@@ -276,7 +295,6 @@ class WorksController < ApplicationController
       end
     end
 
-    comp_file.close
   end
 
 private

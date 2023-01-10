@@ -1,5 +1,5 @@
 class Work < ApplicationRecord
-  has_one_attached :data
+  has_many_attached :datas
   has_many_attached :pictures
   belongs_to :owner
   belongs_to :project
@@ -34,5 +34,16 @@ class Work < ApplicationRecord
       private_works.excluding! owner_works
     end
     public_works = Work.excluding private_works
+  end
+
+  def query_sub_table(sub_table=nil)
+    if sub_table.nil?
+      return self.datas.map {|sub_table_data| sub_table_data.filename.to_s}
+    else
+      self.datas.each do |sub_table_data|
+        return sub_table_data if sub_table_data.filename.to_s.eql? sub_table
+      end
+      return nil
+    end
   end
 end
