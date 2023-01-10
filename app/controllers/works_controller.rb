@@ -48,7 +48,8 @@ class WorksController < ApplicationController
   def get_work
     side_page = !params[:pagination].nil? && params[:pagination].eql?("1")
 
-    if side_page && request.accepts.select {|n| n.symbol.eql?(:json)}.empty?
+    #if side_page && request.accepts.select {|n| n.symbol.eql?(:json)}.empty?
+    if side_page && params[:side].nil?
       side_page_init = true
     else
       side_page_init = false
@@ -145,8 +146,8 @@ class WorksController < ApplicationController
           value = record.delete "value"
           # filter data
           record.each do |type, type_velue|
-            filter_data[type] = [] unless filter_data.key? type
-            filter_data[type].append(type_velue).uniq
+            filter_data[type] = {} unless filter_data.key? type
+            filter_data[type][type_velue] = type_velue
           end
 
           indexes += record.keys
@@ -195,8 +196,14 @@ class WorksController < ApplicationController
       filterControl: :select,
       sortable: true
     }
-    columns = indexes.map { |idx| { field: idx, title: idx }.merge common_col_opt }
-    columns << { field: :key, title: :key }.merge(common_col_opt)
+    columns = indexes.map do |idx|
+      { field: idx, title: idx }.merge(common_col_opt).merge({
+        filterData: "json:" + filter_data[idx].to_json
+      })
+    end
+    columns << { field: :key, title: :key }.merge(common_col_opt).merge({
+      filterData: "json:" + filter_data["key"].to_json
+    })
     fix_cols = columns.size
     columns += @works.map { |work| { field: work.id, title: work.name }.merge(common_col_opt).merge filterControl: :input }
     respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_table}
@@ -205,8 +212,7 @@ class WorksController < ApplicationController
         respon_data.merge! ({
           sidePagination: :server,
           pagination: true,
-          filterData: {json: filter_data},
-          url: "/data/work?pagination=1&works=#{params[:works]}" + (params[:sub].nil? ? "" : "&sub=#{params[:sub]}")
+          url: "/data/work?side=1&pagination=1&works=#{params[:works]}" + (params[:sub].nil? ? "" : "&sub=#{params[:sub]}")
         })
       else
         respon_data = {rows: merge_table, total: merge_data.size}
