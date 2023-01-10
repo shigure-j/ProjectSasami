@@ -271,7 +271,7 @@ class WorksController < ApplicationController
     comp_files = []
     @work.datas.attach(
       data_content.map do |sub_table, data|
-        comp_files << Tempfile.create(encoding: 'ascii-8bit')
+        comp_files << Tempfile.new(encoding: 'ascii-8bit')
         comp_files.last.write Zlib::deflate(data.to_json)
         comp_files.last.rewind
         {
