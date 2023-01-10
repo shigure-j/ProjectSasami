@@ -46,6 +46,14 @@ class WorksController < ApplicationController
   end
 
   def get_work
+    side_page = !params[:pagination].nil? && params[:pagination].eql?("1")
+
+    if side_page && request.accepts.select {|n| n.symbol.eql?(:json)}.empty?
+      side_page_init = true
+    else
+      side_page_init = false
+    end
+
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
 
     begin
@@ -73,17 +81,77 @@ class WorksController < ApplicationController
     end
     table_id = "work_table"
 
-    # Get all index
+    #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
+    #"multiSort"=>{"0"=>{"sortName"=>"key", "sortOrder"=>"asc"}, "1"=>{"sortName"=>"5", "sortOrder"=>"asc"}, "2"=>{"sortName"=>"4", "sortOrder"=>"asc"}}
+    if side_page
+      # sorter
+      if !params["filter"].nil?
+        filter = JSON.parse(params["filter"])
+      else
+        filter = {}
+      end
+      # filter
+      if !params["filter"].nil?
+        filter = JSON.parse(params["filter"])
+      else
+        filter = {}
+      end
+      # search
+      if !params["search"].nil? && !params["search"].empty?
+        search = params["search"]
+      else
+        search = nil
+      end
+      # sort
+      if !params["multiSort"].nil?
+        sorter = params["multiSort"].values.map do |n|
+          [n["sortName"], n["sortOrder"].eql?("desc")]
+        end.to_h
+      elsif !params["sort"].nil?
+        sorter = { params["sort"] => params["order"].eql?("desc") }
+      else
+        sorter = {}
+      end
+    else
+      filter = {}
+      search = nil
+      sorter = {}
+    end
+    
+    # Get all index & filter & search
     indexes = []
     merge_data = {}
+    filter_data = {}
     @works.each_with_index do |work, index|
       @sub_tables.select {|k, v| v}.keys.each do |sub_table|
         sub_table_data = work.query_sub_table sub_table
         next if sub_table_data.nil?
         work_data = JSON.parse Zlib::inflate(sub_table_data.download)
         work_data.each do |record|
+          if side_page
+            # search 
+            next unless search.nil? || record.to_s.match?(search)
+            # filter
+            pass_flag = true
+            filter.each do |type, filter_value|
+              if type.eql?(work.id.to_s) && !record["value"].eql?(filter_value)
+                pass_flag = false
+              elsif record.key?(type) && !record[type].eql?(filter_value)
+                pass_flag = false
+              end
+            end
+            next unless pass_flag
+          end
           value = record.delete "value"
+          # filter data
+          record.each do |type, type_velue|
+            filter_data[type] = [] unless filter_data.key? type
+            filter_data[type].append(type_velue).uniq
+          end
+
           indexes += record.keys
+
+          next if side_page_init
           pic_flag, pic_no = value.split(":")
           if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
             value = works_pics[index][pic_no.to_i]
@@ -104,6 +172,23 @@ class WorksController < ApplicationController
     merge_data.each do |record, values|
       merge_table << (record.merge values)
     end
+    if side_page && !side_page_init
+      # Sort
+      merge_table.sort! do |a, b|
+        res = 0
+        sorter.each do |type, desc|
+          res = a[type] <=> b[type]
+          unless res.zero?
+            res = - res if desc
+            break
+          end
+        end
+        res
+      end
+      # Page
+      range = params["offset"].to_i...(params["offset"].to_i + params["limit"].to_i)
+      merge_table = merge_table[range]
+    end
 
     # Response
     common_col_opt = {
@@ -113,9 +198,20 @@ class WorksController < ApplicationController
     columns = indexes.map { |idx| { field: idx, title: idx }.merge common_col_opt }
     columns << { field: :key, title: :key }.merge(common_col_opt)
     fix_cols = columns.size
-    columns += @works.map { |work| { field: work.id, title: work.name }.merge common_col_opt }
-    #columns += works.map { |work| { field: work.id, title: work.name } }
+    columns += @works.map { |work| { field: work.id, title: work.name }.merge(common_col_opt).merge filterControl: :input }
     respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_table}
+    if side_page
+      if side_page_init
+        respon_data.merge! ({
+          sidePagination: :server,
+          pagination: true,
+          filterData: {json: filter_data},
+          url: "/data/work?pagination=1&works=#{params[:works]}" + (params[:sub].nil? ? "" : "&sub=#{params[:sub]}")
+        })
+      else
+        respon_data = {rows: merge_table, total: merge_data.size}
+      end
+    end
 
     #TODO
     #render json: {columns: columns, data: merge_table}.to_json
@@ -125,6 +221,7 @@ class WorksController < ApplicationController
           table_data: respon_data, table_pictures: works_pics
         }
       }
+      res.json { render json: respon_data }
     end
   end
 

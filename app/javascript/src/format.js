@@ -93,6 +93,26 @@ window.editWork = function() {
   }
 }
 
+window.detailTableButtons = function() {
+  return {
+      //text: 'Show By Page',
+    btnSwitchPage: {
+      icon: 'bi-file-earmark-break',
+      event: function () {
+        if (window.location.toString().match("pagination=1")) {
+          replaceParamVal("pagination", 0)
+        } else {
+          replaceParamVal("pagination", 1)
+        }
+        window.location=window.location.href
+      },
+      attributes: {
+        title: 'Show By Page'
+      }
+    }
+  }
+}
+
 window.changeSub = function(sub) {
   replaceParamVal("sub", sub)
   $.get("/data/work?" + this.location.href.split("?")[1])
