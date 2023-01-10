@@ -13,10 +13,21 @@ $table.bootstrapTable("destroy")
 $table.bootstrapTable(table_opt)
 
 $nav = $("#sub_tables_nav")
-$nav.replaceWith('<ul class="nav nav-tabs" id="sub_tables_nav"></ul>')
-$nav = $("#sub_tables_nav")
-<% @sub_tables.each do |n_table, active| %>
-  $nav.append('<li class="nav-item"><a class="nav-link <%= "active" if active %>" onclick="changeSub(\'<%= n_table %>\')"><%= n_table %></a></li>')
+<% if @sub_tables.size > 6 %>
+  $nav.replaceWith('<div id="sub_tables_nav" class="dropdown"></div>')
+  $nav = $("#sub_tables_nav")
+  $nav.append('<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Table: <%= @sub_tables.invert[true] %></button>')
+  $nav.append('<ul id="sub_table_dropdown" class="dropdown-menu"></ul>')
+  $dropdown = $("#sub_table_dropdown")
+  <% @sub_tables.each do |n_table, active| %>
+    $dropdown.append('<li ><a class="dropdown-item" onclick="changeSub(\'<%= n_table %>\')"><%= n_table %></a></li>')
+  <% end %>
+<% else %>
+  $nav.replaceWith('<ul class="nav nav-tabs" id="sub_tables_nav"></ul>')
+  $nav = $("#sub_tables_nav")
+  <% @sub_tables.each do |n_table, active| %>
+    $nav.append('<li class="nav-item"><a class="nav-link <%= "active" if active %>" onclick="changeSub(\'<%= n_table %>\')"><%= n_table %></a></li>')
+  <% end %>
 <% end %>
 
 //// Clipboard
