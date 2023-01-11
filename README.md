@@ -29,6 +29,7 @@ setenv EDITOR "mate --wait"
 * Deployment instructions
 If internet avalible :
 ```
+bundle config set --local path 'vendor/bundle'
 bin/bundle install
 bin/rails credentials:edit
 bin/rails sasami:init
@@ -41,6 +42,7 @@ tar -czvf dep_pack.tar.gz ./vendor/cache/ public/assets/
 And then, release the package in the offline environment :
 ```
 tar -xzvf package.tar.gz
+bundle config set --local path 'vendor/bundle'
 bin/bundle -l install
 bin/rails credentials:edit
 bin/rails sasami:init_local
