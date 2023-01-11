@@ -47,16 +47,10 @@ class WorksController < ApplicationController
 
   def get_work
     side_page = !params[:pagination].nil? && params[:pagination].eql?("1")
-
-    #if side_page && request.accepts.select {|n| n.symbol.eql?(:json)}.empty?
-    if side_page && params[:side].nil?
-      side_page_init = true
-    else
-      side_page_init = false
-    end
-
+    init_only = side_page && params[:side].nil?
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
 
+    # Work record
     begin
       @works = public_works.find params[:works].split(",")
     rescue
@@ -65,166 +59,71 @@ class WorksController < ApplicationController
       return
     end
 
-    @sub_tables = @works.map {|work| work.query_sub_table}.flatten.uniq.map {|n| [n, false]}.to_h
-    if params[:sub].nil?
-      @sub_tables[@sub_tables.keys.first] = true
-    else
-      params[:sub].split(",").each do |sub|
-        if @sub_tables.key? sub
-          @sub_tables[sub] = true
-        end
-      end
-    end
-    works_pics = @works.map do |work|
-      work.pictures.map do |pic| 
-        view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
-      end
-    end
-    table_id = "work_table"
-
     #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
     #"multiSort"=>{"0"=>{"sortName"=>"key", "sortOrder"=>"asc"}, "1"=>{"sortName"=>"5", "sortOrder"=>"asc"}, "2"=>{"sortName"=>"4", "sortOrder"=>"asc"}}
-    if side_page
-      # sorter
-      if !params["filter"].nil?
-        filter = JSON.parse(params["filter"])
-      else
-        filter = {}
-      end
-      # filter
-      if !params["filter"].nil?
-        filter = JSON.parse(params["filter"])
-      else
-        filter = {}
-      end
-      # search
-      if !params["search"].nil? && !params["search"].empty?
-        search = params["search"]
-      else
-        search = nil
-      end
-      # sort
-      if !params["multiSort"].nil?
-        sorter = params["multiSort"].values.map do |n|
-          [n["sortName"], n["sortOrder"].eql?("desc")]
-        end.to_h
-      elsif !params["sort"].nil?
-        sorter = { params["sort"] => params["order"].eql?("desc") }
-      else
-        sorter = {}
-      end
-    else
-      filter = {}
-      search = nil
-      sorter = {}
-    end
-    
-    # Get all index & filter & search
-    indexes = []
-    merge_data = {}
-    filter_data = {}
-    @works.each_with_index do |work, index|
-      @sub_tables.select {|k, v| v}.keys.each do |sub_table|
-        sub_table_data = work.query_sub_table sub_table
-        next if sub_table_data.nil?
-        work_data = JSON.parse Zlib::inflate(sub_table_data.download)
-        work_data.each do |record|
-          if side_page
-            # search 
-            next unless search.nil? || record.to_s.match?(search)
-            # filter
-            pass_flag = true
-            filter.each do |type, filter_value|
-              if type.eql?(work.id.to_s) && !record["value"].eql?(filter_value)
-                pass_flag = false
-              elsif record.key?(type) && !record[type].eql?(filter_value)
-                pass_flag = false
-              end
+    # Param process
+    sub_tables = params[:sub].nil? ? [] : params[:sub].split(",")
+    range = if params[:offset].nil? || params[:limit].nil?
+              nil
+            else
+              params[:offset].to_i...(params[:offset].to_i + params[:limit].to_i)
             end
-            next unless pass_flag
-          end
-          value = record.delete "value"
-          # filter data
-          record.each do |type, type_velue|
-            filter_data[type] = {} unless filter_data.key? type
-            filter_data[type][type_velue] = type_velue
-          end
+    filter = params[:filter].nil? ? {} : JSON.parse(params[:filter])
+    sorter =  if !params[:multiSort].nil?
+                sorter = params[:multiSort].values.map do |n|
+                  [n[:sortName], n[:sortOrder].eql?("desc")]
+                end.to_h
+              elsif !params[:sort].nil?
+                sorter = { params[:sort] => params[:order].eql?("desc") }
+              else
+                sorter = {}
+              end
 
-          indexes += record.keys
+    # Merge
+    merge_result = Work.merge_works(
+      works: @works,
+      sub_tables: sub_tables,
+      filter: filter,
+      search: params[:search],
+      sorter: sorter,
+      init_only: init_only,
+      range: range,
+      view_context: view_context
+    )
 
-          next if side_page_init
-          pic_flag, pic_no = value.split(":")
-          if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
-            value = works_pics[index][pic_no.to_i]
-          end
-          if merge_data[record].nil? 
-            merge_data[record] = {work.id => value}
-          else
-            merge_data[record][work.id] = value
-          end
-        end
-      end
-    end
-    indexes.uniq!
-    indexes.delete("key")
-
-    # Gen table
-    merge_table = []
-    merge_data.each do |record, values|
-      merge_table << (record.merge values)
-    end
-    if side_page && !side_page_init
-      # Sort
-      merge_table.sort! do |a, b|
-        res = 0
-        sorter.each do |type, desc|
-          res = a[type] <=> b[type]
-          unless res.zero?
-            res = - res if desc
-            break
-          end
-        end
-        res
-      end
-      # Page
-      range = params["offset"].to_i...(params["offset"].to_i + params["limit"].to_i)
-      merge_table = merge_table[range]
-    end
-
-    # Response
+    # Response data
     common_col_opt = {
       filterControl: :select,
       sortable: true
     }
-    columns = indexes.map do |idx|
+    columns = merge_result[:indexes].map do |idx|
       { field: idx, title: idx }.merge(common_col_opt).merge({
-        filterData: "json:" + filter_data[idx].to_json
+        filterData: "json:" + merge_result[:filter_data][idx].to_json
       })
     end
     columns << { field: :key, title: :key }.merge(common_col_opt).merge({
-      filterData: "json:" + filter_data["key"].to_json
+      filterData: "json:" + merge_result[:filter_data]["key"].to_json
     })
     fix_cols = columns.size
     columns += @works.map { |work| { field: work.id, title: work.name }.merge(common_col_opt).merge filterControl: :input }
-    respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_table}
-    if side_page
-      if side_page_init
-        respon_data.merge! ({
-          sidePagination: :server,
-          pagination: true,
-          url: "/data/work?side=1&pagination=1&works=#{params[:works]}" + (params[:sub].nil? ? "" : "&sub=#{params[:sub]}")
-        })
-      else
-        respon_data = {rows: merge_table, total: merge_data.size}
-      end
+    if init_only
+      respon_data = {
+        fixedColumns: true, fixedNumber: fix_cols, columns: columns,
+        sidePagination: :server,
+        pagination: true,
+        url: "/data/work?side=1&pagination=1&works=#{params[:works]}" + (params[:sub].nil? ? "" : "&sub=#{params[:sub]}")
+      }
+    elsif side_page
+      respon_data = {rows: merge_result[:data], total: merge_result[:data_size]}
+    else
+      respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_result[:data]}
     end
 
-    #TODO
-    #render json: {columns: columns, data: merge_table}.to_json
+    # Response
     respond_to do |res|
       res.js { render 'dashboard/table', locals: {
-          table_id: table_id, table_format: [],
-          table_data: respon_data, table_pictures: works_pics
+          table_id: "work_table", table_format: [],
+          table_data: respon_data, sub_tables: merge_result[:sub_tables]
         }
       }
       res.json { render json: respon_data }
@@ -234,6 +133,13 @@ class WorksController < ApplicationController
   def get_summary
     #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
+
+    # Param process
+    range = if params[:offset].nil? || params[:limit].nil?
+              nil
+            else
+              params[:offset].to_i...(params[:offset].to_i + params[:limit].to_i)
+            end
     # filter
     objs = {
       "project" => Project,
@@ -241,62 +147,39 @@ class WorksController < ApplicationController
       "stage" => Stage,
       "owner" => Owner
     }
-    if params["filter"].nil?
-      filtered_works = public_works
-    else
-      filter = {}
-      JSON.parse(params["filter"]).each do |name, value|
-        if objs.key?(name)
-          id = objs[name].find_by(name: value)
-          filter[name + "_id"] = id
+    filter = {}
+    unless params[:filter].nil?
+      JSON.parse(params[:filter]).each do |name, value|
+        if objs.key? name
+          filter[name] = objs[name].find_by(name: value)
         elsif name.match?("time")
           filter[name] = Time.parse(value)
         else
           filter[name] = value
         end
       end
-      filtered_works = public_works.where filter
-    end
-    # search
-    if params["search"].empty?
-      works = filtered_works
-    else
-      works = []
-      filtered_works.each do |work|
-        works << work if work.name.match?(params["search"])
-      end
     end
     # sort
-    sort_obj = nil
-    if params["sort"].nil?
+    if params[:sort].nil?
       sort_key = "created_at"
-      sort_order = "desc"
+      sort_desc = true
     else
-      sort_key = params["sort"]
-      sort_order = params["order"]
+      sort_key = (objs.key? params[:sort]) ? objs[params[:sort]] : params[:sort]
+      sort_desc = params[:order].eql?("desc")
     end
-    if objs.key?(sort_key)
-      sort_obj = objs[sort_key]
-    end
-    works = works.sort_by do |work|
-      if sort_obj.nil?
-        work.attribute_in_database(sort_key)
-      else
-        work.instance_eval(sort_key).name
-      end
-    end
-    if sort_order.eql?("desc")
-      works.reverse!
-    end
+
     # output
-    total = Work.count
-    count = works.size
-    range = params["offset"].to_i...(params["offset"].to_i + params["limit"].to_i)
-    target_works = works[range]
-    merge_table = target_works.map { |work| work.attributes_with_references true }
+    merge_result = Work.merge_summary(
+      works: public_works,
+      filter: filter,
+      search: params[:search],
+      sort: sort_key,
+      desc: sort_desc,
+      range: range
+    )
 
     # Response
-    respon_data = {rows: merge_table, total: count, totalNotFiltered: total}
+    respon_data = {rows: merge_result[:data], total: merge_result[:total], totalNotFiltered: Work.count}
 
     render json: respon_data
   end
@@ -314,40 +197,37 @@ class WorksController < ApplicationController
 
   def create
     i_params = work_params
-    data_content = JSON.parse(work_params[:data].read)
+
+    # Param process
     i_params.delete :data
+    i_params.delete :signature
+    i_params[:pictures].shift unless i_params[:picture].nil?
+    i_params[:project]    = Project.find_or_create_by! name: work_params[:project]
+    i_params[:stage]      = Stage.find_or_create_by! name: work_params[:stage]
+    i_params[:design]     = Design.find_or_create_by! name: work_params[:design], project: i_params[:project]
+    i_params[:is_private] = false if work_params[:is_private].nil?
+    i_params[:owner]      = current_user if logged_in?
 
-    unless i_params[:picture].nil?
-      i_params[:pictures].shift
-    end
-
-    [Project, Stage].each do |obj_class|
-      obj_class_name = obj_class.name.downcase
-      n_obj_name = work_params[obj_class_name.to_sym]
-      obj = obj_class.find_by name: n_obj_name
-      if obj.nil?
-        obj = obj_class.new(name: n_obj_name)
-        obj.save
+    # Data check
+    begin
+      data_content = JSON.parse(work_params[:data].read)
+    rescue
+      respond_to do |res|
+        res.html { render :new, status: :unprocessable_entity }
+        res.json { render json: {status: :false, message: "Data json wrong format"} }
       end
-      i_params[obj_class_name.to_sym] = obj
     end
 
-    if logged_in?
-      owner = current_user
+    # Owner check
+    if i_params[:owner].nil? && work_params[:signature].nil?
+      respond_to do |res|
+        res.html { render :new, status: :unprocessable_entity }
+        res.json { render json: {status: :failed, message: "Empty user name or signature"} }
+      end
+      return
     else
-      if work_params[:signature].nil?
-        respond_to do |res|
-          res.html { render :new, status: :unprocessable_entity }
-          res.json { render json: {status: :failed, message: "No user signature"} }
-        end
-        return
-      end
-
-      signature = work_params[:signature].read
-      owner = Owner.find_by(name: work_params[:owner])
-      if owner.nil?
-        owner = Owner.new name: work_params[:owner], signature: signature
-      elsif !owner.signature.eql? signature
+      i_params[:owner] = Owner.get_or_create name: work_params[:owner], signature: work_params[:signature].read
+      if i_params[:owner].nil?
         respond_to do |res|
           res.html { render :new, status: :unprocessable_entity }
           res.json { render json: {status: :failed, message: "User name and signature mismatch"} }
@@ -355,36 +235,9 @@ class WorksController < ApplicationController
         return
       end
     end
-    i_params.delete :signature
-    i_params[:owner] = owner
-
-    design = i_params[:project].designs.find_by name: i_params[:design]
-    if design.nil?
-      design = i_params[:project].designs.create(name: i_params[:design])
-      design.save
-    end
-    i_params[:design] = design
-
-    if work_params[:is_private].nil?
-      i_params[:is_private] = false
-    end
 
     @work = Work.new(i_params)
-
-    comp_files = []
-    @work.datas.attach(
-      data_content.map do |sub_table, data|
-        comp_files << Tempfile.new(encoding: 'ascii-8bit')
-        comp_files.last.write Zlib::deflate(data.to_json)
-        comp_files.last.rewind
-        {
-          io: comp_files.last,
-          filename: sub_table,
-          content_type: "application/json",
-          identify: false
-        }
-      end
-    )
+    @work.attach_datas data_content
 
     if @work.save
       respond_to do |res|
@@ -394,7 +247,7 @@ class WorksController < ApplicationController
     else
       respond_to do |res|
         res.html { render :new, status: :unprocessable_entity }
-        res.json { render json: {status: :false, message: "Wrong work format"} }
+        res.json { render json: {status: :false, message: "Failed to save work, check input"} }
       end
     end
 

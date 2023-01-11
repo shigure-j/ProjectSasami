@@ -4,4 +4,6 @@ class Stage < ApplicationRecord
   has_many :projects, through: :works
   has_many :designs, through: :works
   has_many :owners, through: :works
+
+  validates :name, presence: true, uniqueness: true
 end

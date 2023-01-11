@@ -20,5 +20,9 @@ module ProjectSasami
     # config.eager_load_paths << Rails.root.join("extras")
 
     # config.action_view.form_with_generates_remote_form = true
+
+    # User
+    config.x.global.name  = "ProjectSasami"
+    config.x.global.title = "ProjectSasami"
   end
 end

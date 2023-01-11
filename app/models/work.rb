@@ -36,6 +36,173 @@ class Work < ApplicationRecord
     public_works = Work.excluding private_works
   end
 
+  def self.merge_summary(works: [], filter: {}, search: nil, sort: nil, desc: false, range: nil)
+    # filter
+    works = works.where filter
+
+    # search
+    unless search.nil?
+      works = works.select do |work|
+                work.name.match?(search)
+              end
+    end
+
+    # sort
+    works = works.sort_by do |work|
+      if sort.is_a?(Class)
+        work.instance_eval(sort.name.downcase).name
+      else
+        work.attribute_in_database(sort)
+      end
+    end
+    works.reverse! if desc
+
+    # range
+    total = works.size
+    works = works[range] unless range.nil?
+    
+    # output
+    {
+      data: works.map { |work| work.attributes_with_references true },
+      total: total
+    }
+  end
+
+  def self.merge_works(works: [], sub_tables: [], filter: {}, search: nil, sorter: {}, init_only: false, range: nil, view_context: nil)
+    return nil if view_context.nil?
+    # sub_tables
+    works_sub_tables = works.map {|work| work.query_sub_table}.flatten.uniq.map {|n| [n, false]}.to_h
+    sub_tables.each do |sub_table|
+      works_sub_tables[sub_table] = true if works_sub_tables.key? sub_table
+    end
+    unless works_sub_tables.value? true
+      works_sub_tables[works_sub_tables.keys.first] = true
+    end
+
+    # pictures
+    works_pics = works.map do |work|
+      work.pictures.map do |pic| 
+        view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
+      end
+    end
+
+    # Get all index & filter & search
+    indexes = []
+    merge_data = {}
+    filter_data = {}
+    data_size = 0
+    works.each_with_index do |work, index|
+      works_sub_tables.select {|k, v| v}.keys.each do |sub_table|
+        sub_table_data = work.query_sub_table sub_table
+        next if sub_table_data.nil?
+        work_data = JSON.parse Zlib::inflate(sub_table_data.download)
+        work_data.each do |record|
+          # search 
+          next unless search.nil? || record.to_s.match?(search)
+          # filter
+          pass_flag = true
+          filter.each do |type, filter_value|
+            if type.eql?(work.id.to_s) && !record["value"].to_s.match?(filter_value)
+              pass_flag = false
+              break
+            elsif (record.key? type) && !record[type].to_s.eql?(filter_value)
+              pass_flag = false
+              break
+            end
+          end
+          next unless pass_flag
+
+          value = record.delete "value"
+          # filter data
+          record.each do |type, type_velue|
+            filter_data[type] = {} unless filter_data.key? type
+            filter_data[type][type_velue] = type_velue
+          end
+          # indexes
+          indexes += record.keys
+          # skip data if init only
+          next if init_only
+
+          # data
+          pic_flag, pic_no = value.split(":")
+          if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
+            value = works_pics[index][pic_no.to_i]
+          end
+          if merge_data[record].nil? 
+            merge_data[record] = {work.id.to_s => value}
+          else
+            merge_data[record][work.id.to_s] = value
+          end
+        end
+      end
+    end
+    indexes.uniq!
+    indexes.delete("key")
+    data_size = merge_data.size
+
+    # Gen table
+    field_filterd = filter.keys
+    merge_table = []
+    merge_data.each do |record, values|
+      record.merge! values
+      next unless (field_filterd - record.keys).empty?
+      merge_table << record
+    end
+    # Sort
+    unless sorter.empty? || merge_table.empty?
+      # Sort
+      merge_table.sort! do |a, b|
+        res = 0
+        sorter.each do |type, desc|
+          res = if a[type].nil? && b[type].nil?
+                  0
+                elsif a[type].nil?
+                  1
+                elsif b[type].nil?
+                  -1
+                else
+                  a[type] <=> b[type]
+                end
+
+          if !res.zero?
+            res = - res if desc
+            break
+          end
+        end
+        res
+      end
+    end
+    # Page
+    unless range.nil? || merge_table.empty?
+      merge_table = merge_table[range]
+    end
+
+    # Return
+    {
+      data: merge_table,
+      data_size: data_size,
+      filter_data: filter_data,
+      indexes: indexes,
+      sub_tables: works_sub_tables
+    }
+  end
+
+  def attach_datas(data_content)
+    self.datas.attach(
+      data_content.map do |sub_table, data|
+        comp_file = Tempfile.new(encoding: 'ascii-8bit')
+        comp_file.write Zlib::deflate(data.to_json)
+        comp_file.rewind
+        {
+          io: comp_file,
+          filename: sub_table,
+          content_type: "application/json",
+          identify: false
+        }
+      end
+    )
+  end
+
   def query_sub_table(sub_table=nil)
     if sub_table.nil?
       return self.datas.map {|sub_table_data| sub_table_data.filename.to_s}
