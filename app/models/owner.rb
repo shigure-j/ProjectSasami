@@ -6,7 +6,7 @@ class Owner < ApplicationRecord
   has_many :designs, through: :works
   has_many :stages, through: :works
 
-  validates :signature, presence: true, uniqueness: true
+  validates :signature, presence: true
   validates :name, presence: true, uniqueness: true
 
   def self.get_or_create(name: nil, signature: nil)

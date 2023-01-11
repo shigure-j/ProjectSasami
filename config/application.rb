@@ -24,5 +24,8 @@ module ProjectSasami
     # User
     config.x.global.name  = "ProjectSasami"
     config.x.global.title = "ProjectSasami"
+    config.hosts << "localhost"
+    config.hosts << "127.0.0.1"
+    #config.hosts << "server_ip" ;# Add your server IP here
   end
 end

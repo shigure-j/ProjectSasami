@@ -27,8 +27,7 @@ class OwnerSessionsController < ApplicationController
       @owner = Owner.find_by(name: params[:name])
       signature = params[:signature].read
       if @owner.nil?
-        @owner = Owner.new name: owner_params[:name], signature: signature
-        @owner.save
+        @owner = Owner.create name: params[:name], signature: signature
         auto_login @owner
         remember_me!
         @message = "Create new user #{@owner.name}"
