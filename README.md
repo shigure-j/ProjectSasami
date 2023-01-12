@@ -46,9 +46,9 @@ And then, release the package in the offline environment :
 ```
 tar -xzvf package.tar.gz
 bundle config set --local path 'vendor/bundle'
-bin/bundle -l install
+bin/bundle install --local
 bin/rails credentials:edit
-bin/rails sasami:init_local
+bin/rails sasami:local_init
 bin/rails server -b server_ip -p server_port
 ```
 

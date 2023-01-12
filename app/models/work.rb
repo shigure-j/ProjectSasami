@@ -101,11 +101,11 @@ class Work < ApplicationRecord
           next unless search.nil? || record.to_s.match?(search)
           # filter
           pass_flag = true
-          filter.each do |type, filter_value|
-            if type.eql?(work.id.to_s) && !record["value"].to_s.match?(filter_value)
+          filter.each do |filter_key, filter_value|
+            if filter_key.eql?(work.id.to_s) && !record["value"].to_s.match?(filter_value)
               pass_flag = false
               break
-            elsif (record.key? type) && !record[type].to_s.eql?(filter_value)
+            elsif (record.key? filter_key) && !record[filter_key].to_s.eql?(filter_value)
               pass_flag = false
               break
             end
@@ -114,9 +114,9 @@ class Work < ApplicationRecord
 
           value = record.delete "value"
           # filter data
-          record.each do |type, type_velue|
-            filter_data[type] = {} unless filter_data.key? type
-            filter_data[type][type_velue] = type_velue
+          record.each do |key, value|
+            filter_data[key] = {} unless filter_data.key? key
+            filter_data[key][value] = value
           end
           # indexes
           indexes += record.keys
@@ -138,7 +138,6 @@ class Work < ApplicationRecord
     end
     indexes.uniq!
     indexes.delete("key")
-    data_size = merge_data.size
 
     # Gen table
     field_filterd = filter.keys
@@ -161,7 +160,7 @@ class Work < ApplicationRecord
                 elsif b[type].nil?
                   -1
                 else
-                  a[type] <=> b[type]
+                  (Float(a[type]) rescue a[type]) <=> (Float(b[type]) rescue b[type])
                 end
 
           if !res.zero?
@@ -172,6 +171,7 @@ class Work < ApplicationRecord
         res
       end
     end
+    data_size = merge_table.size
     # Page
     unless range.nil? || merge_table.empty?
       merge_table = merge_table[range]
