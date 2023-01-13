@@ -3,29 +3,31 @@
     <%= render partial: "dashboard/nav" %>
   </div>
 
-  <div class="row px-5 py-5">
-    <div class="col-6 card py-2" onclick="location.href='summary';">
+  <div class="row px-5 py-5 user-select-none">
+    <div class="col-6 card py-2" >
       <h1 class="bi bi-eye card-img-top"></h1>
       <div class="card-body">
-        <h2 class="card-text">View Works</h2>
+        <a data-turbo="false" href="/summary" class="card-text h2 link-dark" style="text-decoration:none">View Works</a>
+        <%= render partial: "thumbnail" %>
       </div>
     </div>
 
-    <div class="col-6 card py-2" onclick="location.href='works/new';">
-      <h1 class="bi bi-upload card-img-top"></h1>
-      <div class="card-body">
-        <h2 class="card-text">Upload Works</h2>
-      </div>
-    </div>
-
-    <div class="col-6 card py-2" >
+    <div class="col-6 card py-2 user-select-none">
       <h1 class="bi bi-graph-up card-img-top"></h1>
       <div class="card-body">
         <h2 class="card-text">Statistics</h2>
+        <%= render partial: "statistic" %>
       </div>
     </div>
 
-    <div class="col-6 card py-2" >
+    <div class="col-6 card py-2 user-select-none">
+      <h1 class="bi bi-upload card-img-top"></h1>
+      <div class="card-body">
+        <a data-turbo="false" href="/works/new" class="card-text h2 link-dark" style="text-decoration:none">Upload Works</a>
+      </div>
+    </div>
+
+    <div class="col-6 card py-2 user-select-none" >
       <h1 class="bi bi-gear card-img-top"></h1>
       <div class="card-body">
         <h2 class="card-text">Settings</h2>

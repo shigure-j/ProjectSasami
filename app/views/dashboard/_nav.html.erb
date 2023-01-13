@@ -21,7 +21,9 @@
         <%= link_to "Upload", "/works/new", class: "nav-link", data: {turbo: false} %>
       </li>
     </ul>
-    <div class="d-flex" data-bs-toggle="modal" data-bs-target="#login_modal" onclick="document.getElementById('login_fram').reload();">
+    <!--div class="d-flex" data-bs-toggle="modal" data-bs-target="#login_modal" onclick="document.getElementById('login_fram').reload();"-->
+    <!--div class="d-flex" data-bs-toggle="modal" data-bs-target="#login_modal" onclick="Turbo.visit('/login_status', {action: 'replace'})"-->
+    <div class="d-flex" data-bs-toggle="modal" data-bs-target="#login_modal">
       <span class="nav-item">
         <turbo-frame id="owner_status" src="/login_status"></turbo-frame>
       </span>

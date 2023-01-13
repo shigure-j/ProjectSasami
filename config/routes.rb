@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get "data/delete", to: "works#delete"
   get "detail", to: "dashboard#detail"
   get "summary", to: "dashboard#summary"
+  #get "statistic", to: "dashboard#statistic"
 
   get  "login",  to: 'owner_sessions#new', :as => :login
   get  "login_status",  to: 'owner_sessions#status'
