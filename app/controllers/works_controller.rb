@@ -105,7 +105,14 @@ class WorksController < ApplicationController
       filterData: "json:" + merge_result[:filter_data]["key"].to_json
     })
     fix_cols = columns.size
-    columns += @works.map { |work| { field: work.id, title: work.name }.merge(common_col_opt).merge filterControl: :input }
+    columns += @works.map do |work|
+      common_col_opt.merge({
+        field: work.id,
+        title: work.name,
+        filterControl: :input,
+        align: :right
+      })
+    end
     if init_only
       respon_data = {
         fixedColumns: true, fixedNumber: fix_cols, columns: columns,
