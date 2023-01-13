@@ -15,6 +15,7 @@ class DashboardController < ApplicationController
   def statistic
     attachements = ActiveStorage::Blob.all  
     attachements_bytes = attachements.reduce(0) {|sum, n| sum + n.byte_size}
+    db_file = Rails.root + Rails.application.config.database_configuration[Rails.env]["database"]
     {
       works_count:    Work.count,
       projects_count: Project.count,
@@ -22,7 +23,7 @@ class DashboardController < ApplicationController
       owners_count:   Owner.count,
       file_size:      convert_file_size(attachements_bytes),
       file_count:     attachements.size,
-      db_size:        convert_file_size(File.size(Rails.application.config.database_configuration[Rails.env]["database"]))
+      db_size:        convert_file_size(db_file.size)
     }
   end
 
