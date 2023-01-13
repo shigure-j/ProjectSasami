@@ -44,7 +44,7 @@
                 <div class="mb-3">
                   <label for="input_user_signature" class="form-label" > Signature File </label>
                   <%= form.file_field :signature, class: "form-control", id: "input_user_signature" %>
-                  <i class="bi bi-info-circle-fill" data-bs-toggle="modal" data-bs-target="#signature_about">About User Signature</i>
+                  <i class="bi bi-info-circle-fill user-select-none" data-bs-toggle="modal" data-bs-target="#signature_about">About User Signature</i>
                   <div class="modal fade modal-lg" id="signature_about" tabindex="-1" aria-labelledby="signature_about_label" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
@@ -54,9 +54,9 @@
                         </div>
                         <div class="modal-body">
                           <h5>Select existed signature file:</h5>
-                          <p class="py-3">~/.sasami_key</p>
+                          <pre class="py-3"><code>~/.sasami_key</code></pre>
                           <h5>For new user, you can generate a signature by command below:</h5>
-                          <p class="py-3"><%= %q(echo `date +%s``hexdump -v -n 8 -e '/1 "%02X"' /dev/random` > ~/.sasami_key) %></p>
+                          <pre class="py-3"><code><%= %q(echo `date +%s``hexdump -v -n 8 -e '/1 "%02X"' /dev/random` > ~/.sasami_key && chmod og-rw ~/.sasami_key) %></code></pre>
                         </div>
                       </div>
                     </div>
