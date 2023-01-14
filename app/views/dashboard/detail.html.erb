@@ -16,43 +16,37 @@
   </div>
 </div>
 
-<div class="container-fluid d-flex flex-column vh-100">
-  <div class="row">
-    <%= render partial: "nav" %>
+<div class="row d-flex flex-fill">
+  <div class="col-1 py-5" style="max-width: 60px;">
+    <div class="btn btn-light d-inline-flex align-items-center" style="height: 100%;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks">
+      <i class="bi bi-arrow-bar-right"></i>
+    </div>
   </div>
-
-  <div class="row d-flex flex-fill">
-    <div class="col-1 py-5" style="max-width: 60px;">
-      <div class="btn btn-light d-inline-flex align-items-center" style="height: 100%;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks">
-        <i class="bi bi-arrow-bar-right"></i>
-      </div>
+  <div class="col-1 flex-grow-1">
+    <div id="table_toolbar">
+      <ul class="nav nav-tabs" id="sub_tables_nav">
+      </ul>
     </div>
-    <div class="col-1 flex-grow-1">
-      <div id="table_toolbar">
-        <ul class="nav nav-tabs" id="sub_tables_nav">
-        </ul>
-      </div>
-      <table
-        id="work_table"
-        data-advanced-search="true"
-        data-cache="false"
-        data-filter-control="true"
-        data-id-table="advancedTable"
-        data-reorderable-columns="false"
-        data-reorderable-rows="false"
-        data-resizable="true"
-        data-search="true"
-        data-show-columns-search="true"
-        data-show-columns-toggle-all="true"
-        data-show-columns="true"
-        data-use-row-attr-func="false"
-        data-show-multi-sort="true"
-        data-toolbar="#table_toolbar"
-        data-show-search-clear-button="true"
-        data-buttons="detailTableButtons"
-      >
-      </table>
-    </div>
+    <table
+      id="work_table"
+      data-advanced-search="true"
+      data-cache="false"
+      data-filter-control="true"
+      data-id-table="advancedTable"
+      data-reorderable-columns="false"
+      data-reorderable-rows="false"
+      data-resizable="true"
+      data-search="true"
+      data-show-columns-search="true"
+      data-show-columns-toggle-all="true"
+      data-show-columns="true"
+      data-use-row-attr-func="false"
+      data-show-multi-sort="true"
+      data-toolbar="#table_toolbar"
+      data-show-search-clear-button="true"
+      data-buttons="detailTableButtons"
+    >
+    </table>
   </div>
 </div>
 

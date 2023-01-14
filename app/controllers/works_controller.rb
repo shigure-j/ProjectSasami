@@ -254,6 +254,22 @@ class WorksController < ApplicationController
         res.html { redirect_to @work }
         res.json { render json: {status: :done, message: "Uploaed as #{@work.id}"} }
       end
+
+      # Notifi
+      NotificationChannel.broadcast_to (@work.is_private ? @work.owner : nil), {
+        title: "New upload from #{@work.owner.name}",
+        body: [
+                "<span class='align-middle mx-2 h5'>#{@work.name}</span>",
+                "<span class='align-middle mx-1 badge text-bg-primary'  >#{@work.project.name}</span>",
+                "<span class='align-middle mx-1 badge text-bg-secondary'>#{@work.design.name} </span>",
+                "<span class='align-middle mx-1 badge text-bg-info'     >#{@work.stage.name}  </span>",
+                "<div class='d-flex justify-content-end mt-2 pt-2 border-top'>",
+                (view_context.link_to "View", @work, class: "link-primary", data: {turbo: false}),
+                "</div>"
+              ].join,
+        time: (Time.now.strftime "%a %m/%d %H:%M"),
+        timeout: 0
+      }
     else
       respond_to do |res|
         res.html { render :new, status: :unprocessable_entity }

@@ -37,6 +37,7 @@ class OwnerSessionsController < ApplicationController
       else
         auto_login @owner
         remember_me!
+        cookies.signed[:owner_id] = @owner.id
         @message = "Login as #{@owner.name}"
       end
     end
@@ -44,6 +45,7 @@ class OwnerSessionsController < ApplicationController
   end
 
   def destroy
+    cookies.signed[:owner_id] = nil
     logout
   end
 end

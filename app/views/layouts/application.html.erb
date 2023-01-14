@@ -13,7 +13,13 @@
   </head>
 
   <body>
-    <%= yield %>
+    <div class="container-fluid d-flex flex-column vh-100">
+      <div class="row">
+        <%= render partial: "dashboard/nav" %>
+      </div>
+      <%= yield %>
+      <%= render partial: "dashboard/notification" %>
+    </div>
     <%= javascript_include_tag "page", "data-turbo-track": "reload" %>
   </body>
 </html>
