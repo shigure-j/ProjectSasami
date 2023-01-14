@@ -1,7 +1,7 @@
 class DashboardController < ApplicationController
   def index
     @status = statistic
-    @works  = Work.all[-7..-1].reverse
+    @works  = Work.filter_by_owner(logged_in? ? current_user : nil)[-7..-1].reverse
   end
 
   def summary

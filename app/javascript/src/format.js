@@ -132,7 +132,7 @@ window.loadWork = function(incr, redirect) {
     return row.id
   }))
   if (redirect) {
-    window.location.href="detail?works=" + work_ids.join(",")
+    window.location.href="/detail?works=" + work_ids.join(",")
   } else {
     replaceParamVal("works", work_ids.join(","))
     $.get("/data/work?works="+ work_ids.join(","))

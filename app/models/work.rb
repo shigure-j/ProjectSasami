@@ -82,7 +82,10 @@ class Work < ApplicationRecord
     # pictures
     works_pics = works.map do |work|
       work.pictures.map do |pic| 
-        view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
+        #W/A to avoid full url
+        #view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
+        pic_path = view_context.rails_blob_path pic, only_path: true
+        view_context.image_tag pic_path, height: 80, onclick: "modalView('#{view_context.image_tag pic_path, id: "modal_view", class: "img-fluid"}')"
       end
     end
 

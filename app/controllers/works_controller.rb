@@ -208,6 +208,7 @@ class WorksController < ApplicationController
     # Param process
     i_params.delete :data
     i_params.delete :signature
+    i_params.delete :owner
     i_params[:pictures].shift unless i_params[:picture].nil?
     i_params[:project]    = Project.find_or_create_by! name: work_params[:project]
     i_params[:stage]      = Stage.find_or_create_by! name: work_params[:stage]
@@ -226,20 +227,22 @@ class WorksController < ApplicationController
     end
 
     # Owner check
-    if i_params[:owner].nil? && work_params[:signature].nil?
-      respond_to do |res|
-        res.html { render :new, status: :unprocessable_entity }
-        res.json { render json: {status: :failed, message: "Empty user name or signature"} }
-      end
-      return
-    else
-      i_params[:owner] = Owner.get_or_create name: work_params[:owner], signature: work_params[:signature].read
-      if i_params[:owner].nil?
+    if i_params[:owner].nil? 
+      if (work_params[:owner].nil? || work_params[:signature].nil?)
         respond_to do |res|
           res.html { render :new, status: :unprocessable_entity }
-          res.json { render json: {status: :failed, message: "User name and signature mismatch"} }
+          res.json { render json: {status: :failed, message: "Empty user name or signature"} }
         end
         return
+      else
+        i_params[:owner] = Owner.get_or_create name: work_params[:owner], signature: work_params[:signature].read
+        if i_params[:owner].nil?
+          respond_to do |res|
+            res.html { render :new, status: :unprocessable_entity }
+            res.json { render json: {status: :failed, message: "User name and signature mismatch"} }
+          end
+          return
+        end
       end
     end
 
