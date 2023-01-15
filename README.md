@@ -14,11 +14,6 @@ Ruby 3.1.3
 * Configuration
 
 Edit `config/application.rb`, and add server ip to `config.hosts`
-Set env :
-```
-setenv RAILS_ENV production
-setenv EDITOR "mate --wait"
-```
 
 * Database creation
 
@@ -32,24 +27,12 @@ setenv EDITOR "mate --wait"
 
 If internet avalible :
 ```
-bundle config set --local path 'vendor/bundle'
-bin/bundle install
-bin/rails credentials:edit
-bin/rails sasami:init
-bin/rails server -b server_ip -p server_port
+bin/setup
+bin/rails server -e production -b server_ip -p server_port
 ```
-Else, you can run command below to package required file from a builded environment :
+Else, use `--local` option to setup with existed cached gem package and compiled asstes:
 ```
-tar -czvf package.tar.gz ./vendor/cache/ public/assets/
+bin/setup --local
+bin/rails server -e production -b server_ip -p server_port
 ```
-And then, release the package in the offline environment :
-```
-tar -xzvf package.tar.gz
-bundle config set --local path 'vendor/bundle'
-bin/bundle install --local
-bin/rails credentials:edit
-bin/rails sasami:local_init
-bin/rails server -b server_ip -p server_port
-```
-
-* ...
+Prepared `vendor/cache` and `public/assets` are packaged in release files.

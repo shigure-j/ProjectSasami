@@ -1,32 +1,36 @@
   <div class="row px-5 py-5 user-select-none">
-    <div class="col-6 card py-2" >
-      <h1 class="bi bi-eye card-img-top"></h1>
+    <div class="col-6 card py-2 px-3 bg-light">
+      <div class="bi bi-eye card-img-top h1 py-2">
+        <a data-turbo="false" href="/summary" class="link-dark" style="text-decoration:none">View Works</a>
+      </div>
       <div class="card-body">
-        <a data-turbo="false" href="/summary" class="card-text h2 link-dark" style="text-decoration:none">View Works</a>
         <%= render partial: "thumbnail" %>
       </div>
     </div>
 
-    <div class="col-6 card py-2">
-      <h1 class="bi bi-graph-up card-img-top"></h1>
+    <div class="col-6 card py-2 px-3 bg-light">
+      <div class="bi bi-graph-up card-img-top h1 py-2">
+        <a data-turbo="false" href="#" class="link-dark" style="text-decoration:none">Statistics</a>
+      </div>
       <div class="card-body">
-        <h2 class="card-text">Statistics</h2>
         <%= render partial: "statistic" %>
       </div>
     </div>
 
-    <div class="col-6 card py-2">
-      <h1 class="bi bi-upload card-img-top"></h1>
-      <div class="card-body">
-        <a data-turbo="false" href="/works/new" class="card-text h2 link-dark" style="text-decoration:none">Upload Works</a>
+    <div class="col-6 card py-2 px-3 bg-light">
+      <div class="bi bi-upload card-img-top h1 py-2">
+        <a data-turbo="false" href="/works/new" class="link-dark" style="text-decoration:none">Upload Works</a>
       </div>
+      <!--div class="card-body">
+      </div-->
     </div>
 
-    <div class="col-6 card py-2" >
-      <h1 class="bi bi-gear card-img-top"></h1>
-      <div class="card-body">
-        <h2 class="card-text">Settings</h2>
+    <div class="col-6 card py-2 px-3 bg-light">
+      <div class="bi bi-gear card-img-top h1 py-2">
+        <a data-turbo="false" href="#" class="link-dark" style="text-decoration:none">Settings</a>
       </div>
+      <!--div class="card-body">
+      </div-->
     </div>
 
   </div>

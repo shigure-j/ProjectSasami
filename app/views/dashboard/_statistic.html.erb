@@ -1,19 +1,19 @@
-<ul class="list-group">
-  <li class="list-group-item list-group-item-light">
+<ul class="list-group px-2">
+  <li class="list-group-item list-group-item-info">
     <h5 class="my-1 bi bi-file-earmark-ruled-fill"> Works: <%= @status[:works_count] %> </h5>
   </li>
-  <li class="list-group-item list-group-item-light">
+  <li class="list-group-item list-group-item-info">
     <h5 class="my-1 bi bi-people-fill"  > Onwers: <%= @status[:owners_count] %></h5>
   </li>
-  <li class="list-group-item list-group-item-light">
+  <li class="list-group-item list-group-item-info">
     <h5 class="my-1 bi bi-kanban-fill"  > Projects: <%= @status[:projects_count] %> </h5>
   </li>
-  <li class="list-group-item list-group-item-light">
+  <li class="list-group-item list-group-item-info">
     <h5 class="my-1 bi bi-pencil-square"> Designs: <%= @status[:designs_count] %> </h5>
   </li>
-  <li class="list-group-item list-group-item-light">
+  <li class="list-group-item list-group-item-info">
     <h5 class="my-1 bi bi-hdd-fill"> Storage: </h5>
-    <p class="mx-4 my-1">Database: <%= @status[:db_size] %> </p>
-    <p class="mx-4 my-1">Attachments[<%= @status[:file_count] %>]: <%= @status[:file_size] %> </p>
+    <p class="mx-4 my-1 fw-light"><span class="fw-bolder">Database</span>: <%= @status[:db_size] %> </p>
+    <p class="mx-4 my-1 fw-light"><span class="fw-bolder">Attachments</span>[<%= @status[:file_count] %>]: <%= @status[:file_size] %> </p>
   </li>
 </ul>
