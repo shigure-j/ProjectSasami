@@ -1,38 +1,26 @@
 # README
+ProjectSasami is a simple rails web application to collect and show metrics in IC backend projects.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
+### Ruby version
 Ruby 3.1.3
 
-* System dependencies
-
-* Configuration
-
+### Configuration
 Edit `config/application.rb`, and add server ip to `config.hosts`
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
+### Setup
 If internet avalible :
 ```
 bin/setup
-bin/rails server -e production -b server_ip -p server_port
 ```
-Else, use `--local` option to setup with existed cached gem package and compiled asstes:
+Else, use `--local` option to setup with existed gem cache and compiled asstes:
 ```
 bin/setup --local
-bin/rails server -e production -b server_ip -p server_port
 ```
 Prepared `vendor/cache` and `public/assets` are packaged in release files.
+
+### Deploy
+```
+bin/rails server -e production -b server_ip [-p server_port] [-d]
+```
+Rails default port is `:3000` if `server_port` not given,
+option `-d` will runs server as a Daemon, and the pid will stored in `tmp/pids/server.pid`
