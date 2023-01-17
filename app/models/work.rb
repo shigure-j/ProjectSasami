@@ -36,9 +36,9 @@ class Work < ApplicationRecord
     public_works = Work.excluding private_works
   end
 
-  def self.merge_summary(works: [], filter: {}, search: nil, sort: nil, desc: false, range: nil)
+  def self.merge_summary(works: [], filter: {}, search: nil, sorter: {}, range: nil)
     # filter
-    works = works.where filter
+    works = works.joins(:project, :design, :owner, :stage).where filter
 
     # search
     unless search.nil?
@@ -48,6 +48,7 @@ class Work < ApplicationRecord
     end
 
     # sort
+    sort, desc = sorter.first
     works = works.sort_by do |work|
       if sort.is_a?(Class)
         work.instance_eval(sort.name.downcase).name

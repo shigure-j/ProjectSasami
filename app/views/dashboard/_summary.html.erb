@@ -29,7 +29,12 @@
           <% unless value[:formatter].nil? %>
             data-formatter="<%= "cellFormatterDashboardView#{no}" %>"
           <% end %>
+          <% if @filter_data.key? key %>
             data-filter-control="select"
+            data-filter-data="json:<%= @filter_data[key].to_json %>"
+          <% else %>
+            data-filter-control="input"
+          <% end %>
             data-sortable="true"
         > <%= key %> </th>
         <% unless value[:formatter].nil? %>

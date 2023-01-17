@@ -63,32 +63,17 @@ class WorksController < ApplicationController
     #"multiSort"=>{"0"=>{"sortName"=>"key", "sortOrder"=>"asc"}, "1"=>{"sortName"=>"5", "sortOrder"=>"asc"}, "2"=>{"sortName"=>"4", "sortOrder"=>"asc"}}
     # Param process
     sub_tables = params[:sub].nil? ? [] : params[:sub].split(",")
-    range = if params[:offset].nil? || params[:limit].nil?
-              nil
-            else
-              params[:offset].to_i...(params[:offset].to_i + params[:limit].to_i)
-            end
-    filter = params[:filter].nil? ? {} : JSON.parse(params[:filter])
-    sorter =  if !params[:multiSort].nil?
-                sorter = params[:multiSort].values.map do |n|
-                  [n[:sortName], n[:sortOrder].eql?("desc")]
-                end.to_h
-              elsif !params[:sort].nil?
-                sorter = { params[:sort] => params[:order].eql?("desc") }
-              else
-                sorter = {}
-              end
-
+    parsed_table_param = parse_table_param params
     # Merge
     merge_result = Work.merge_works(
       works: @works,
       sub_tables: sub_tables,
-      filter: filter,
-      search: params[:search],
-      sorter: sorter,
       init_only: init_only,
-      range: range,
-      view_context: view_context
+      view_context: view_context,
+      sorter: parsed_table_param[:sorter],
+      filter: parsed_table_param[:filter],
+      search: parsed_table_param[:search],
+      range:  parsed_table_param[:range]
     )
 
     # Response data
@@ -142,47 +127,17 @@ class WorksController < ApplicationController
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
 
     # Param process
-    range = if params[:offset].nil? || params[:limit].nil?
-              nil
-            else
-              params[:offset].to_i...(params[:offset].to_i + params[:limit].to_i)
-            end
-    # filter
-    objs = {
-      "project" => Project,
-      "design" => Design,
-      "stage" => Stage,
-      "owner" => Owner
-    }
-    filter = {}
-    unless params[:filter].nil?
-      JSON.parse(params[:filter]).each do |name, value|
-        if objs.key? name
-          filter[name] = objs[name].find_by(name: value)
-        elsif name.match?("time")
-          filter[name] = Time.parse(value)
-        else
-          filter[name] = value
-        end
-      end
-    end
-    # sort
-    if params[:sort].nil?
-      sort_key = "created_at"
-      sort_desc = true
-    else
-      sort_key = (objs.key? params[:sort]) ? objs[params[:sort]] : params[:sort]
-      sort_desc = params[:order].eql?("desc")
-    end
+    parsed_table_param = parse_table_param params, sub_filter: {time: true, object: true}
+    # default time sort
+    parsed_table_param[:sorter]["created_at"] = true if parsed_table_param[:sorter].empty?
 
     # output
     merge_result = Work.merge_summary(
-      works: public_works,
-      filter: filter,
-      search: params[:search],
-      sort: sort_key,
-      desc: sort_desc,
-      range: range
+      works:  public_works,
+      sorter: parsed_table_param[:sorter],
+      filter: parsed_table_param[:filter],
+      search: parsed_table_param[:search],
+      range:  parsed_table_param[:range]
     )
 
     # Response
@@ -277,6 +232,55 @@ class WorksController < ApplicationController
       end
     end
 
+  end
+
+  def parse_table_param(params, sub_filter: {time: false, object: false})
+    objs = sub_filter[:object] ? {
+      "project" => Project,
+      "design" => Design,
+      "stage" => Stage,
+      "owner" => Owner
+    } : {}
+    range = if params[:offset].nil? || params[:limit].nil?
+              nil
+            else
+              params[:offset].to_i...(params[:offset].to_i + params[:limit].to_i)
+            end
+    filter = if params[:filter].nil?
+                {}
+             else
+               JSON.parse(params[:filter]).map do |name, value|
+                 if sub_filter[:object] && objs.key?(name)
+                   #[[name, :name].join("."), value]
+                   [name, {name: value}]
+                 elsif sub_filter[:object] && name.match?("created_at")
+                   time_start, time_stop = value.split("~").map {|n| Time.parse n}
+                   if time_stop.nil?
+                     ["created_at", (time_start.midnight)..(time_start.end_of_day)]
+                   else
+                     ["created_at", time_start.midnight..time_stop.end_of_day]
+                   end
+                 else
+                   [name, value]
+                 end
+               end.to_h
+             end
+    p filter
+    sorter =  if !params[:multiSort].nil?
+                sorter = params[:multiSort].values.map do |n|
+                  [n[:sortName], n[:sortOrder].eql?("desc")]
+                end.to_h
+              elsif !params[:sort].nil?
+                { params[:sort] => params[:order].eql?("desc") }
+              else
+                {}
+              end
+    return {
+      search: params[:search],
+      filter: filter,
+      sorter: sorter,
+      range:  range
+    }
   end
 
 private

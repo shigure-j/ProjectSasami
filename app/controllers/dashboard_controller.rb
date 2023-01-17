@@ -10,10 +10,14 @@ class DashboardController < ApplicationController
 
   def summary
     @format = Format.find_by(name: :work).get_format
+    @filter_data = filter_data
+    p "DEBUG"
+    p @filter_data
   end
 
   def detail
     @format = Format.find_by(name: :work).get_format
+    @filter_data = filter_data
   end
 
   def statistic
@@ -41,5 +45,16 @@ class DashboardController < ApplicationController
               end
             end
     "#{org_size}#{unit}"
+  end
+
+  def filter_data
+    map_proc = Proc.new {|n| [n.name, n.name]}
+    {
+      "owner"       =>  Owner.all.map(&map_proc).to_h,
+      "project"     =>  Project.all.map(&map_proc).to_h,
+      "design"      =>  Design.all.map(&map_proc).to_h,
+      "stage"       =>  Stage.all.map(&map_proc).to_h,
+      "is_private"  =>  {true: true, false: false}
+    }
   end
 end
