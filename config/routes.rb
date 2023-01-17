@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get "data/work", to: "works#get_work"
   get "data/edit", to: "works#edit"
   get "data/delete", to: "works#delete"
+  get "export", to: "works#export"
   get "detail", to: "dashboard#detail"
   get "summary", to: "dashboard#summary"
   #get "statistic", to: "dashboard#statistic"

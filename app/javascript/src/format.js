@@ -109,6 +109,15 @@ window.detailTableButtons = function() {
       attributes: {
         title: 'Show By Page'
       }
+    },
+    btnExport: {
+      icon: 'bi-download',
+      event: function () {
+        window.location= "/export.xlsx?" + window.location.href.toString().split("?")[1]
+      },
+      attributes: {
+        title: 'Export To Excel'
+      }
     }
   }
 }

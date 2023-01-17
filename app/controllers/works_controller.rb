@@ -122,6 +122,46 @@ class WorksController < ApplicationController
     end
   end
 
+  def export
+    public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
+
+    # Work record
+    begin
+      @works = public_works.find params[:works].split(",")
+    rescue
+      #ActiveRecord::RecordNotFound
+      render js: 'alert("Invalid request!");'
+      return
+    end
+
+    # Param process
+    sub_tables = params[:sub].nil? ? [] : params[:sub].split(",")
+    parsed_table_param = parse_table_param params
+    # Merge
+    merge_result = Work.merge_works(
+      works: @works,
+      sub_tables: sub_tables,
+      sorter: parsed_table_param[:sorter],
+      filter: parsed_table_param[:filter],
+      search: parsed_table_param[:search],
+    )
+    @data = merge_result[:data]
+    @columns = merge_result[:indexes].map do |idx|
+      [idx, idx]
+    end
+    @columns << [ "key", "key" ]
+    @columns += @works.map do |work|
+      [ work.id.to_s, work.name ]
+    end
+
+    #render xlsx: "export"
+    respond_to do |format|
+      format.xlsx {
+        response.headers['Content-Disposition'] = 'attachment; filename="export.xlsx"'
+      }
+    end
+  end
+
   def get_summary
     #Parameters: {"search"=>"abc", "sort"=>"design", "order"=>"asc", "offset"=>"0", "limit"=>"10", "filter"=>"{\"name\":\"test\",\"project\":\"MC20\",\"design\":\"23\",\"stage\":\"44\"}", "_"=>"1672831883028", "work"=>{}}
     public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
@@ -265,7 +305,6 @@ class WorksController < ApplicationController
                  end
                end.to_h
              end
-    p filter
     sorter =  if !params[:multiSort].nil?
                 sorter = params[:multiSort].values.map do |n|
                   [n[:sortName], n[:sortOrder].eql?("desc")]
@@ -282,6 +321,20 @@ class WorksController < ApplicationController
       range:  range
     }
   end
+
+  #def gen_excel(datas)
+  #  workbook  = RubyXL::Workbook.new
+  #  worksheet = workbook.add_worksheet('table')
+  #  datas[:indexes].each_with_index do |index, col_num|
+  #    worksheet.add_cell(0, col_num, index)
+  #  end
+  #  datas[:data].each_with_index do |data, row_num|
+  #    data.each do |index, value|
+  #      col_num = datas[:indexes].find_index index
+  #      worksheet.add_cell(row_num.next, col_num, value) unless col_num.nil?
+  #    end
+  #  end
+  #end
 
 private
   def work_params

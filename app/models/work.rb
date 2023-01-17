@@ -52,6 +52,8 @@ class Work < ApplicationRecord
     works = works.sort_by do |work|
       if sort.is_a?(Class)
         work.instance_eval(sort.name.downcase).name
+      elsif sort.eql?("is_private")
+        work.attribute_in_database(sort).to_s
       else
         work.attribute_in_database(sort)
       end
@@ -70,7 +72,6 @@ class Work < ApplicationRecord
   end
 
   def self.merge_works(works: [], sub_tables: [], filter: {}, search: nil, sorter: {}, init_only: false, range: nil, view_context: nil)
-    return nil if view_context.nil?
     # sub_tables
     works_sub_tables = works.map {|work| work.query_sub_table}.flatten.uniq.map {|n| [n, false]}.to_h
     sub_tables.each do |sub_table|
@@ -85,8 +86,12 @@ class Work < ApplicationRecord
       work.pictures.map do |pic| 
         #W/A to avoid full url
         #view_context.image_tag pic, height: 80, onclick: "modalView('#{view_context.image_tag pic, id: "modal_view", class: "img-fluid"}')"
-        pic_path = view_context.rails_blob_path pic, only_path: true
-        view_context.image_tag pic_path, height: 80, onclick: "modalView('#{view_context.image_tag pic_path, id: "modal_view", class: "img-fluid"}')"
+        if view_context.nil?
+          pic
+        else
+          pic_path = view_context.rails_blob_path pic, only_path: true
+          view_context.image_tag pic_path, height: 80, onclick: "modalView('#{view_context.image_tag pic_path, id: "modal_view", class: "img-fluid"}')"
+        end
       end
     end
 

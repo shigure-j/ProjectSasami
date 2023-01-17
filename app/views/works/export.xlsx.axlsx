@@ -1,0 +1,14 @@
+indexes = @columns.to_h
+indexes_keys = indexes.keys
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "table") do |sheet|
+  sheet.add_row indexes.values
+  @data.each_with_index do |data, row_num|
+    row = []
+    data.each do |index, value|
+      col_num = indexes_keys.find_index index
+      row[col_num] = value unless col_num.nil?
+    end
+    sheet.add_row row
+  end
+end
