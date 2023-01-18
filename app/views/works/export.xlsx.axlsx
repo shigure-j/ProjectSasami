@@ -1,14 +1,38 @@
 indexes = @columns.to_h
 indexes_keys = indexes.keys
+first_col = "A"
+excel_header = [first_col.dup] + (1...indexes_keys.size).map { |n| first_col.succ!.dup }
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "table") do |sheet|
+  pics = {}
   sheet.add_row indexes.values
-  @data.each_with_index do |data, row_num|
+  @data.each_with_index do |data, data_num|
     row = []
     data.each do |index, value|
       col_num = indexes_keys.find_index index
-      row[col_num] = value unless col_num.nil?
+      next if col_num.nil?
+      if (value.is_a? ActiveStorage::Attachment) && value.name.eql?("pictures")
+        anchor = [(excel_header[col_num] + (data_num + 2).to_s), (excel_header[col_num.next] + (data_num + 3).to_s)]
+        pics[anchor] = value
+      else
+        row[col_num] = value
+      end
     end
     sheet.add_row row
+  end
+  pics.map do |anc, img|
+    #Tempfile.create(encoding: 'ascii-8bit') do |tmp|
+    #  tmp << img.download
+    #  tmp.flush
+    #  sheet.add_image(image_src: tmp.path, start_at: anc) ; #(width: 100, height: 100)
+    #end
+    extension = img.filename
+    tmp = Tempfile.create(['', ".#{extension}"], encoding: 'ascii-8bit')
+    tmp << img.download
+    tmp.flush
+    sheet.add_image(image_src: tmp.path, start_at: anc.first, end_at: anc.last) ; #(width: 100, height: 100)
+    tmp
+  end.each do |tmp|
+    tmp.close
   end
 end
