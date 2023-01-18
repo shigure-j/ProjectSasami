@@ -16,6 +16,7 @@ wb.add_worksheet(name: "table") do |sheet|
   sheet.add_row indexes.values
   @data.each_with_index do |data, data_num|
     row = []
+    row_height = nil
     data.each do |index, value|
       col_num = indexes_keys.find_index index
       next if col_num.nil?
@@ -38,15 +39,12 @@ wb.add_worksheet(name: "table") do |sheet|
         end
         pics[anchor] = [value, pic_size.map(&:to_i)]
         column_widths[col_num] = cell_width
+        row_height = cell_height
       else
         row[col_num] = value
       end
     end
-    if pics.empty?
-      sheet.add_row row
-    else
-      sheet.add_row row, height: cell_height
-    end
+  sheet.add_row row, height: row_height
   end
   pics.map do |anc, img_data|
     #Tempfile.create(encoding: 'ascii-8bit') do |tmp|
@@ -69,6 +67,6 @@ wb.add_worksheet(name: "table") do |sheet|
   end
   #sheet.column_widths(column_widths) unless column_widths.empty?
   column_widths.each_with_index do |width, index|
-    sheet.column_info[index].width = width
+    sheet.column_info[index].width = width unless width.nil?
   end
 end
