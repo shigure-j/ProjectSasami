@@ -11,8 +11,6 @@ class DashboardController < ApplicationController
   def summary
     @format = Format.find_by(name: :work).get_format
     @filter_data = filter_data
-    p "DEBUG"
-    p @filter_data
   end
 
   def detail

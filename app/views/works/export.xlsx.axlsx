@@ -1,7 +1,14 @@
+# w/h
+max_size = [192.0, 108.0]
+cell_ratio = max_size.reduce(&:/)
+cell_height = (max_size.last  * 0.75).to_i
+cell_width  = (max_size.first / 8.05).to_i
+
 indexes = @columns.to_h
 indexes_keys = indexes.keys
+column_widths = []
 first_col = "A"
-excel_header = [first_col.dup] + (1...indexes_keys.size).map { |n| first_col.succ!.dup }
+excel_header = [first_col.dup] + (1..indexes_keys.size).map { |n| first_col.succ!.dup }
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "table") do |sheet|
   pics = {}
@@ -13,26 +20,52 @@ wb.add_worksheet(name: "table") do |sheet|
       next if col_num.nil?
       if (value.is_a? ActiveStorage::Attachment) && value.name.eql?("pictures")
         anchor = [(excel_header[col_num] + (data_num + 2).to_s), (excel_header[col_num.next] + (data_num + 3).to_s)]
-        pics[anchor] = value
+        pic_size = ["width", "height"].map {|n| value.metadata[n].to_f}
+        if pic_size.include? nil
+          pic_size = max_size
+        else
+          pic_ratio = pic_size.reduce(&:/)
+          if pic_ratio > cell_ratio
+            # wider, fill x
+            pic_size[0] = max_size[0]
+            pic_size[1] = pic_size[0] / pic_ratio
+          else
+            # higher, fill y
+            pic_size[1] = max_size[1]
+            pic_size[0] = pic_size[1] * pic_ratio
+          end
+        end
+        pics[anchor] = [value, pic_size.map(&:to_i)]
+        column_widths[col_num] = cell_width
       else
         row[col_num] = value
       end
     end
-    sheet.add_row row
+    if pics.empty?
+      sheet.add_row row
+    else
+      sheet.add_row row, height: cell_height
+    end
   end
-  pics.map do |anc, img|
+  pics.map do |anc, img_data|
     #Tempfile.create(encoding: 'ascii-8bit') do |tmp|
     #  tmp << img.download
     #  tmp.flush
     #  sheet.add_image(image_src: tmp.path, start_at: anc) ; #(width: 100, height: 100)
     #end
-    extension = img.filename
+    img, (width, height) = img_data
+    extension = img.filename.to_s.split(".").last
     tmp = Tempfile.create(['', ".#{extension}"], encoding: 'ascii-8bit')
     tmp << img.download
     tmp.flush
-    sheet.add_image(image_src: tmp.path, start_at: anc.first, end_at: anc.last) ; #(width: 100, height: 100)
+    #sheet.add_image(image_src: tmp.path, start_at: anc.first, end_at: anc.last)
+    sheet.add_image(image_src: tmp.path, start_at: anc.first, width: width, height: height)
     tmp
   end.each do |tmp|
     tmp.close
+  end
+  #sheet.column_widths(column_widths) unless column_widths.empty?
+  column_widths.each_with_index do |width, index|
+    sheet.column_info[index].width = width
   end
 end

@@ -24,6 +24,8 @@ module ProjectSasami
     # User
     config.x.global.name  = "ProjectSasami"
     config.x.global.title = "ProjectSasami"
+    config.active_storage.variant_processor = :mini_magick
+    config.active_storage.analyzers = [ActiveStorage::Analyzer::ImageAnalyzer::ImageMagick]
     config.hosts << "localhost"
     config.hosts << "127.0.0.1"
     #config.hosts << "server_ip" ;# Add your server IP here
