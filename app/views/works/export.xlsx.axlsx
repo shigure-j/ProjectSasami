@@ -1,8 +1,9 @@
 # w/h
 max_size = [192.0, 108.0]
 cell_ratio = max_size.reduce(&:/)
+# fit to sheet unit
 cell_height = (max_size.last  * 0.75).to_i
-cell_width  = (max_size.first / 8.05).to_i
+cell_width  = ((max_size.first + 5) / 8.0).to_i
 
 indexes = @columns.to_h
 indexes_keys = indexes.keys
@@ -21,7 +22,7 @@ wb.add_worksheet(name: "table") do |sheet|
       if (value.is_a? ActiveStorage::Attachment) && value.name.eql?("pictures")
         anchor = [(excel_header[col_num] + (data_num + 2).to_s), (excel_header[col_num.next] + (data_num + 3).to_s)]
         pic_size = ["width", "height"].map {|n| value.metadata[n].to_f}
-        if pic_size.include? nil
+        if pic_size.include? 0
           pic_size = max_size
         else
           pic_ratio = pic_size.reduce(&:/)
@@ -58,7 +59,9 @@ wb.add_worksheet(name: "table") do |sheet|
     tmp = Tempfile.create(['', ".#{extension}"], encoding: 'ascii-8bit')
     tmp << img.download
     tmp.flush
+    # Anchor
     #sheet.add_image(image_src: tmp.path, start_at: anc.first, end_at: anc.last)
+    # Keep ratio but not anchor
     sheet.add_image(image_src: tmp.path, start_at: anc.first, width: width, height: height)
     tmp
   end.each do |tmp|
