@@ -1,3 +1,28 @@
+wb = xlsx_package.workbook
+# style
+styles = wb.styles
+head_style = styles.add_style(
+  bg_color:   "FF113285",
+  fg_color:   "FFFFFFFF",
+  alignment:  {horizontal: :center, vertical: :center},
+  border:     {:style => :thin, :color => "FF000000"},
+  b:          true
+)
+  #bg_color:   "FF58B2DC",
+  #bg_color:   "FF51A8DD",
+key_style = styles.add_style(
+  bg_color:   "FF2EA9DF",
+  fg_color:   "FFFFFFFF",
+  alignment:  {horizontal: :left, vertical: :center},
+  border:     {:style => :thin, :color => "FF000000"}
+)
+value_style = styles.add_style(
+  bg_color:   "FFFFFFFF",
+  fg_color:   "FF000000",
+  alignment:  {horizontal: :right, vertical: :center},
+  border:     {:style => :thin, :color => "FF000000"}
+)
+data_styles = [key_style] * (@columns.size - @works.size) + [value_style] * @works.size
 # w/h
 max_size = [192.0, 108.0]
 cell_ratio = max_size.reduce(&:/)
@@ -10,12 +35,11 @@ indexes_keys = indexes.keys
 column_widths = []
 first_col = "A"
 excel_header = [first_col.dup] + (1..indexes_keys.size).map { |n| first_col.succ!.dup }
-wb = xlsx_package.workbook
 wb.add_worksheet(name: "table") do |sheet|
   pics = {}
-  sheet.add_row indexes.values
+  sheet.add_row indexes.values, style: head_style
   @data.each_with_index do |data, data_num|
-    row = []
+    row = [""] * @columns.size
     row_height = nil
     data.each do |index, value|
       col_num = indexes_keys.find_index index
@@ -44,7 +68,7 @@ wb.add_worksheet(name: "table") do |sheet|
         row[col_num] = value
       end
     end
-  sheet.add_row row, height: row_height
+  sheet.add_row row, height: row_height, style: data_styles
   end
   pics.map do |anc, img_data|
     #Tempfile.create(encoding: 'ascii-8bit') do |tmp|
