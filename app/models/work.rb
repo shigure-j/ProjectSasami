@@ -107,7 +107,7 @@ class Work < ApplicationRecord
         next if sub_table_data.nil?
         work_data = JSON.parse Zlib::inflate(sub_table_data.download)
         work_data.each do |record|
-          record_key = record["key"]
+          record_key = focus.empty? ? record["key"] : record.delete "key"
           keys << record_key
           # focus
           next unless focus.empty? || focus.include?(record_key)
@@ -146,7 +146,7 @@ class Work < ApplicationRecord
           if focus.empty?
             merge_data[record][work.id.to_s] = value
           else
-            merge_data[record]["#{work.id}.#{record["key"]}"] = value
+            merge_data[record]["#{work.id}.#{record_key}"] = value
           end
         end
       end
