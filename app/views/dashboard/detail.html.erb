@@ -60,4 +60,30 @@
   </div>
 </div>
 
+<div class="modal fade" id="focusModal" tabindex="-1" aria-labelledby="focusModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="focusModalLabel">Focus on keys</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex">
+          <select id="focusSelect" class="form-select"></select>
+          <button onclick="addFocusKey();" type="button" class="btn btn-secondary bi bi-plus"></button>
+        </div>
+        <div class="py-2 px-2">
+          <ul id="focusKeyList" class="list-group">
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button onclick="focusKeys();" type="button" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <%= render partial: "edit" %>

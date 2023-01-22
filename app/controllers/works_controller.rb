@@ -63,6 +63,7 @@ class WorksController < ApplicationController
     #"multiSort"=>{"0"=>{"sortName"=>"key", "sortOrder"=>"asc"}, "1"=>{"sortName"=>"5", "sortOrder"=>"asc"}, "2"=>{"sortName"=>"4", "sortOrder"=>"asc"}}
     # Param process
     sub_tables = params[:sub].nil? ? [] : params[:sub].split(",")
+    focus = params[:focus].nil? ? [] : params[:focus].split(",")
     parsed_table_param = parse_table_param params
     # Merge
     merge_result = Work.merge_works(
@@ -70,6 +71,7 @@ class WorksController < ApplicationController
       sub_tables: sub_tables,
       init_only: init_only,
       view_context: view_context,
+      focus:  focus,
       sorter: parsed_table_param[:sorter],
       filter: parsed_table_param[:filter],
       search: parsed_table_param[:search],
@@ -86,24 +88,39 @@ class WorksController < ApplicationController
         filterData: "json:" + merge_result[:filter_data][idx].to_json
       })
     end
-    columns << { field: :key, title: :key }.merge(common_col_opt).merge({
-      filterData: "json:" + merge_result[:filter_data]["key"].to_json
-    })
-    fix_cols = columns.size
-    columns += @works.map do |work|
-      common_col_opt.merge({
-        field: work.id,
-        title: work.name,
-        filterControl: :input,
-        align: :right
+    if focus.empty?
+      columns << { field: :key, title: :key }.merge(common_col_opt).merge({
+        filterData: "json:" + merge_result[:filter_data]["key"].to_json
       })
+      fix_cols = columns.size
+      columns += @works.map do |work|
+        common_col_opt.merge({
+          field: work.id,
+          title: work.name,
+          filterControl: :input,
+          align: :right
+        })
+      end
+    else
+      fix_cols = columns.size
+      columns += @works.product(focus).map do |work, key|
+        common_col_opt.merge({
+          field: "#{work.id}.#{key}",
+          title: "#{work.name}.#{key}",
+          filterControl: :input,
+          align: :right
+        })
+      end
     end
     if init_only
+      data_url = "/data/work?side=1&pagination=1&works=#{params[:works]}"
+      data_url += "&sub=#{params[:sub]}" unless params[:sub].nil? 
+      data_url += "&focus=#{params[:focus]}" unless params[:focus].nil?
       respon_data = {
         fixedColumns: true, fixedNumber: fix_cols, columns: columns,
         sidePagination: :server,
         pagination: true,
-        url: "/data/work?side=1&pagination=1&works=#{params[:works]}" + (params[:sub].nil? ? "" : "&sub=#{params[:sub]}")
+        url: data_url
       }
     elsif side_page
       respon_data = {rows: merge_result[:data], total: merge_result[:data_size]}
@@ -115,7 +132,8 @@ class WorksController < ApplicationController
     respond_to do |res|
       res.js { render 'dashboard/table', locals: {
           table_id: "work_table", table_format: [],
-          table_data: respon_data, sub_tables: merge_result[:sub_tables]
+          table_data: respon_data, sub_tables: merge_result[:sub_tables],
+          table_keys: merge_result[:keys]
         }
       }
       res.json { render json: respon_data }

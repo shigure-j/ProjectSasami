@@ -118,8 +118,38 @@ window.detailTableButtons = function() {
       attributes: {
         title: 'Export To Excel'
       }
+    },
+    btnFocus: {
+      icon: 'bi-magic',
+      event: function () {
+        $('#focusModal').modal("show")
+      },
+      attributes: {
+        title: 'Focus on keys'
+      }
     }
   }
+}
+
+window.addFocusKeyOption = function(key) {
+  $('#focusSelect').append(`<option value="${key}">${key}</option>`)
+}
+
+window.addFocusKey = function() {
+  sel_val = $("#focusSelect").val()
+  if ($("#focusSelect option:selected").size() == 0) {
+    return
+  }
+  $("#focusSelect option:selected").remove()
+  add_el = `<li onclick="this.remove();window.addFocusKeyOption(this.textContent)" class="list-group-item" value="${sel_val}">${sel_val}</li>`
+  $("#focusKeyList").append(add_el)
+}
+
+window.focusKeys = function() {
+  $li = $("#focusKeyList li")
+  focus_param = $li.toArray().map((i) => {return i.textContent}).join(",")
+  replaceParamVal("focus", focus_param)
+  window.location=window.location.href
 }
 
 window.changeSub = function(sub) {

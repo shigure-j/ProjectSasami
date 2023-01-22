@@ -30,6 +30,14 @@ $nav = $("#sub_tables_nav")
   <% end %>
 <% end %>
 
+$focus_sel = $("#focusSelect")
+$("#focusKeyList").empty()
+$focus_sel.empty()
+<% table_keys.each do |key|%>
+  //$focus_sel.append('<option value="<%= key %>"><%= key %></option>')
+  window.addFocusKeyOption("<%= key %>")
+<% end %>
+
 //// Clipboard
 //var clipboard = new ClipboardJS(".btn")
 //clipboard.on('success', function(e) {

@@ -71,7 +71,7 @@ class Work < ApplicationRecord
     }
   end
 
-  def self.merge_works(works: [], sub_tables: [], filter: {}, search: nil, sorter: {}, init_only: false, range: nil, view_context: nil)
+  def self.merge_works(works: [], sub_tables: [], focus: [], filter: {}, search: nil, sorter: {}, init_only: false, range: nil, view_context: nil)
     # sub_tables
     works_sub_tables = works.map {|work| work.query_sub_table}.flatten.uniq.map {|n| [n, false]}.to_h
     sub_tables.each do |sub_table|
@@ -99,6 +99,7 @@ class Work < ApplicationRecord
     indexes = []
     merge_data = {}
     filter_data = {}
+    keys = []
     data_size = 0
     works.each_with_index do |work, index|
       works_sub_tables.select {|k, v| v}.keys.each do |sub_table|
@@ -106,6 +107,10 @@ class Work < ApplicationRecord
         next if sub_table_data.nil?
         work_data = JSON.parse Zlib::inflate(sub_table_data.download)
         work_data.each do |record|
+          record_key = record["key"]
+          keys << record_key
+          # focus
+          next unless focus.empty? || focus.include?(record_key)
           # search 
           next unless search.nil? || record.to_s.match?(search)
           # filter
@@ -137,15 +142,17 @@ class Work < ApplicationRecord
           if pic_flag.eql?("picture") && pic_no.match?(/[0-9]+/)
             value = works_pics[index][pic_no.to_i]
           end
-          if merge_data[record].nil? 
-            merge_data[record] = {work.id.to_s => value}
-          else
+          merge_data[record] = {} if merge_data[record].nil? 
+          if focus.empty?
             merge_data[record][work.id.to_s] = value
+          else
+            merge_data[record]["#{work.id}.#{record["key"]}"] = value
           end
         end
       end
     end
     indexes.uniq!
+    keys.uniq!
     indexes.delete("key")
 
     # Gen table
@@ -191,6 +198,7 @@ class Work < ApplicationRecord
       data: merge_table,
       data_size: data_size,
       filter_data: filter_data,
+      keys: keys,
       indexes: indexes,
       sub_tables: works_sub_tables
     }
