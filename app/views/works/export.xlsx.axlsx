@@ -22,7 +22,11 @@ value_style = styles.add_style(
   alignment:  {horizontal: :right, vertical: :center},
   border:     {:style => :thin, :color => "FF000000"}
 )
-data_styles = [key_style] * (@columns.size - @works.size) + [value_style] * @works.size
+data_styles = if @focus.empty?
+                [key_style] * (@columns.size - @works.size) + [value_style] * @works.size
+              else
+                [key_style] * (@columns.size - @works.size * @focus.size) + [value_style] * (@works.size * @focus.size)
+              end
 # w/h
 max_size = [192.0, 108.0]
 cell_ratio = max_size.reduce(&:/)
@@ -37,15 +41,31 @@ first_col = "A"
 excel_header = [first_col.dup] + (1..indexes_keys.size).map { |n| first_col.succ!.dup }
 wb.add_worksheet(name: "table") do |sheet|
   pics = {}
+  unless @focus.empty?
+    offset = @columns.size - @works.size * @focus.size
+    focus_work_row = [nil] * offset
+    focus_work_style = [nil] * offset
+    merge_cells = []
+    @works.each do |work|
+      cell_name = excel_header[focus_work_row.size] + "1"
+      focus_work_row << work.name
+      focus_work_row += [nil] * @focus.size.pred
+      focus_work_style += [head_style] * @focus.size
+      merge_cells << "#{cell_name}:#{excel_header[focus_work_row.size.pred] + '1'}"
+    end
+    sheet.add_row focus_work_row, style: focus_work_style
+    merge_cells.each { |cell| sheet.merge_cells cell }
+  end
   sheet.add_row indexes.values, style: head_style
   @data.each_with_index do |data, data_num|
-    row = [""] * @columns.size
+    excel_row = data_num + (@focus.empty? ? 2 : 3)
+    row = [""] * data_styles.size
     row_height = nil
     data.each do |index, value|
       col_num = indexes_keys.find_index index
       next if col_num.nil?
       if (value.is_a? ActiveStorage::Attachment) && value.name.eql?("pictures")
-        anchor = [(excel_header[col_num] + (data_num + 2).to_s), (excel_header[col_num.next] + (data_num + 3).to_s)]
+        anchor = [(excel_header[col_num] + excel_row.to_s), (excel_header[col_num.next] + excel_row.next.to_s)]
         pic_size = ["width", "height"].map {|n| value.metadata[n].to_f}
         if pic_size.include? 0
           pic_size = max_size

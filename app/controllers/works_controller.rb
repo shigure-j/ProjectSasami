@@ -154,11 +154,13 @@ class WorksController < ApplicationController
 
     # Param process
     sub_tables = params[:sub].nil? ? [] : params[:sub].split(",")
+    @focus = params[:focus].nil? ? [] : params[:focus].split(",")
     parsed_table_param = parse_table_param params
     # Merge
     merge_result = Work.merge_works(
       works: @works,
       sub_tables: sub_tables,
+      focus:  @focus,
       sorter: parsed_table_param[:sorter],
       filter: parsed_table_param[:filter],
       search: parsed_table_param[:search],
@@ -167,9 +169,15 @@ class WorksController < ApplicationController
     @columns = merge_result[:indexes].map do |idx|
       [idx, idx]
     end
-    @columns << [ "key", "key" ]
-    @columns += @works.map do |work|
-      [ work.id.to_s, work.name ]
+    if @focus.empty?
+      @columns << [ "key", "key" ]
+      @columns += @works.map do |work|
+        [ work.id.to_s, work.name ]
+      end
+    else
+      @columns += @works.product(@focus).map do |work, key|
+        ["#{work.id}.#{key}", key]
+      end
     end
 
     #render xlsx: "export"
