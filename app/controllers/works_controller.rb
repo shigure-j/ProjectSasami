@@ -85,7 +85,8 @@ class WorksController < ApplicationController
     }
     columns = merge_result[:indexes].map do |idx|
       { field: idx, title: idx }.merge(common_col_opt).merge({
-        filterData: "json:" + merge_result[:filter_data][idx].to_json
+        filterData: "json:" + merge_result[:filter_data][idx].to_json,
+        rowspan: (focus.empty? ? nil : 2)
       })
     end
     if focus.empty?
@@ -103,17 +104,11 @@ class WorksController < ApplicationController
       end
     else
       fix_cols = columns.size
-      last_work = nil
-      columns += @works.product(focus).map do |work, key|
-        col_title = if work.eql?(last_work) 
-                      "<i class='bi bi-arrow-left opacity-25'></i><hr>#{key}"
-                    else
-                      "#{work.name}<hr>#{key}"
-                    end
-        last_work = work
+      columns += @works.map { |work| {title: work.name, colspan: focus.size, align: :center} }
+      columns = [columns] << @works.product(focus).map do |work, key|
         common_col_opt.merge({
           field: "#{work.id}.#{key}",
-          title: col_title,
+          title: key,
           filterControl: :input,
           align: :right
         })
