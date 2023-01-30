@@ -103,10 +103,17 @@ class WorksController < ApplicationController
       end
     else
       fix_cols = columns.size
+      last_work = nil
       columns += @works.product(focus).map do |work, key|
+        col_title = if work.eql?(last_work) 
+                      "<i class='bi bi-arrow-left opacity-25'></i><hr>#{key}"
+                    else
+                      "#{work.name}<hr>#{key}"
+                    end
+        last_work = work
         common_col_opt.merge({
           field: "#{work.id}.#{key}",
-          title: "#{work.name}.#{key}",
+          title: col_title,
           filterControl: :input,
           align: :right
         })

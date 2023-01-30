@@ -122,6 +122,11 @@ class Work < ApplicationRecord
             elsif (record.key? filter_key) && !record[filter_key].to_s.eql?(filter_value)
               pass_flag = false
               break
+            elsif !focus.empty? && 
+                  filter_key.eql?("#{work.id.to_s}.#{record_key}") &&
+                  !record["value"].to_s.match?(filter_value)
+              pass_flag = false
+              break
             end
           end
           next unless pass_flag
