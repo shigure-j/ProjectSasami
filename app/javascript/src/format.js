@@ -154,6 +154,7 @@ window.focusKeys = function() {
 
 window.changeSub = function(sub) {
   replaceParamVal("sub", sub)
+  replaceParamVal("focus", "")
   $.get("/data/work?" + this.location.href.split("?")[1])
 }
 window.loadWork = function(incr, redirect) {
