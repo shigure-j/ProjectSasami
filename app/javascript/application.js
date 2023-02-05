@@ -20,7 +20,7 @@ import "bootstrap-table/dist/extensions/fixed-columns/bootstrap-table-fixed-colu
 import "bootstrap-table/dist/extensions/multiple-sort/bootstrap-table-multiple-sort"
 //import "bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header"
 //import "bootstrap-table/dist/extensions/reorder-rows/bootstrap-table-reorder-rows"
-import "./src/format"
+import "./src/utils"
 
 window.bootstrap = bootstrap
 window.ClipboardJS = ClipboardJS
