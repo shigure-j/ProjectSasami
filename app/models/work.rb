@@ -5,13 +5,15 @@ class Work < ApplicationRecord
   belongs_to :project
   belongs_to :design
   belongs_to :stage
+  has_many  :downstreams, class_name: "Work", foreign_key: "upstream_id"
+  belongs_to  :upstream,  class_name: "Work", optional: true
 
   def attributes_with_references(name_only=false)
     self.attributes.to_a.map do |attr|
       if attr[0].match?("_id$")
         ref_name = attr[0].sub(/_id$/,'')
         if name_only
-          [ref_name , self.instance_eval(ref_name).name]
+          [ref_name , (self.instance_eval(ref_name).name rescue nil)]
         else
           [ref_name , self.instance_eval(ref_name)]
         end
@@ -24,7 +26,7 @@ class Work < ApplicationRecord
       else
         attr
       end
-    end.to_h
+    end.to_h.merge({relationship: relationship})
   end
 
   def self.filter_by_owner(owner=nil)
@@ -234,5 +236,25 @@ class Work < ApplicationRecord
       end
       return nil
     end
+  end
+
+  def relationship
+    {
+      id: id,
+      upstream: (upstream.name rescue nil),
+      upstream_id: upstream_id,
+      upstreams_size: upstreams.size,
+      downstreams_size: downstreams.size
+    }
+  end
+
+  def upstreams
+    upstreams = []
+    n_upstream = upstream
+    until n_upstream.nil? || upstreams.include?(n_upstream)
+      upstreams << n_upstream
+      n_upstream = n_upstream.upstream
+    end
+    upstreams
   end
 end

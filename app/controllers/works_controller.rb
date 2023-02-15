@@ -196,6 +196,13 @@ class WorksController < ApplicationController
 
     # Param process
     parsed_table_param = parse_table_param params, sub_filter: {time: true, object: true}
+    # up/down stream
+    case parsed_table_param[:updown]
+    when :up
+      public_works = public_works.where id: parsed_table_param[:updown_work].upstreams.map(&:id)
+    when :down
+      public_works = public_works.where id: parsed_table_param[:updown_work].downstreams.map(&:id)
+    end
     # default time sort
     parsed_table_param[:sorter]["created_at"] = true if parsed_table_param[:sorter].empty?
 
@@ -342,11 +349,27 @@ class WorksController < ApplicationController
               else
                 {}
               end
+    if !params[:upstreams_of].nil?
+      updown_work = Work.find_by id: params[:upstreams_of]
+      unless updown_work.nil?
+        updown = :up
+      end
+    elsif !params[:downstreams_of].nil?
+      updown_work = Work.find_by id: params[:downstreams_of]
+      unless updown_work.nil?
+        updown = :down
+      end
+    else
+      updown_work = nil
+      updown = nil
+    end
     return {
       search: params[:search],
       filter: filter,
       sorter: sorter,
-      range:  range
+      range:  range,
+      updown: updown,
+      updown_work: updown_work
     }
   end
 

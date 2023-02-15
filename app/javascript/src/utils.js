@@ -35,7 +35,7 @@ window.cellFormatter = function(type, opt, add) {
       }
     case "path":
       return function(value) {
-        return '<button type="button" class="btn btn-secondary focus-popover" data-clipboard-action="copy" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" data-clipboard-text="' + value + '" data-bs-content="' + value + '"> copy </button>'
+        return '<button type="button" class="btn btn-secondary focus-popover bi bi-clipboard" data-clipboard-action="copy" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover focus" data-clipboard-text="' + value + '" data-bs-content="' + value + '"></button>'
       }
     case "image":
       return function(value, row, index, field) {
@@ -44,10 +44,17 @@ window.cellFormatter = function(type, opt, add) {
     case "boolean":
       return function(value) {
         if (value == "true" || value == "1") {
-          return '<i class="bi bi-check-circle-fill">true</i>'
+          return '<i class="bi bi-check-circle-fill"></i>'
         } else {
-          return '<i class="bi bi-x-circle">false</i>'
+          return '<i class="bi bi-x-circle"></i>'
         }
+      }
+    case "relationship":
+      return function(value) {
+        upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-up focus-popover' data-turbo='false' href='/detail?works=${value.upstream_id}' data-bs-placement='top' data-bs-title='Upstream work' data-bs-content='${value.upstream}'></a>`
+        upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-up focus-popover' data-turbo='false' href='/summary?upstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Ancestors counts:' data-bs-content='${value.upstreams_size}'></a>`
+        downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-down focus-popover' data-turbo='false' href='/summary?downstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Downstreams counts:' data-bs-content='${value.downstreams_size}'></a>`
+        return ('<div class="btn-group" role="group">' + upstream + upstreams + downstreams + '</div>')
       }
     default:
       return function(value) {

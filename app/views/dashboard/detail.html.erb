@@ -12,7 +12,7 @@
       </div>
       <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
     </div>
-    <%= render partial: "dashboard/summary", locals: {format: @format} %>
+    <%= render partial: "dashboard/summary", locals: {format: @format, data_param: nil} %>
   </div>
 </div>
 
@@ -84,6 +84,5 @@
     </div>
   </div>
 </div>
-
 
 <%= render partial: "edit" %>

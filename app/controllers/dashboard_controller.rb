@@ -11,6 +11,7 @@ class DashboardController < ApplicationController
   def summary
     @format = Format.find_by(name: :work).get_format
     @filter_data = filter_data
+    @data_param = request.url.split("?")[1]
   end
 
   def detail

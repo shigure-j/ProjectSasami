@@ -17,7 +17,7 @@
   data-buttons-align="right"
   data-pagination="true"
   data-side-pagination="server"
-  data-url="/data/summary"
+  data-url="/data/summary?<%= data_param %>"
 >
   <thead>
     <tr>
@@ -36,7 +36,7 @@
             data-filter-control="input"
           <% end %>
             data-sortable="true"
-        > <%= key %> </th>
+          > <%= value[:title] %> </th>
         <% unless value[:formatter].nil? %>
           <script> <%= "cellFormatterDashboardView#{no}" %> = <%= value[:formatter].html_safe %> </script>
         <% end %>

@@ -7,6 +7,7 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 # Default work format
+Format.delete_by name: :work
 format = Format.new(name: :work)
 format.format = %q({
     "name": {
@@ -29,15 +30,22 @@ format.format = %q({
         "type": "string",
         "option": ""
     },
+    "relationship": {
+        "title": "related",
+        "type": "relationship",
+        "option": ""
+    },
     "path": {
         "type": "path",
         "option": ""
     },
     "created_at": {
+        "title": "created",
         "type": "datetime",
         "option": "yyyy/MM/dd HH:mm"
     },
     "is_private": {
+        "title": "private",
         "type": "boolean",
         "option": ""
     }

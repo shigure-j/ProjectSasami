@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_07_115959) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_15_083259) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -91,10 +91,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_07_115959) do
     t.integer "design_id", null: false
     t.string "path"
     t.boolean "is_private"
+    t.integer "upstream_id"
     t.index ["design_id"], name: "index_works_on_design_id"
     t.index ["owner_id"], name: "index_works_on_owner_id"
     t.index ["project_id"], name: "index_works_on_project_id"
     t.index ["stage_id"], name: "index_works_on_stage_id"
+    t.index ["upstream_id"], name: "index_works_on_upstream_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -105,4 +107,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_07_115959) do
   add_foreign_key "works", "owners"
   add_foreign_key "works", "projects"
   add_foreign_key "works", "stages"
+  add_foreign_key "works", "works", column: "upstream_id"
 end

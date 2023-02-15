@@ -13,6 +13,7 @@ class Format < ApplicationRecord
       [key, 
         {
           formatter:  formatter,
+          title:      (value.fetch "title" rescue key),
           width:      value["width"]
         }
       ]
