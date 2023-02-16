@@ -51,9 +51,9 @@ window.cellFormatter = function(type, opt, add) {
       }
     case "relationship":
       return function(value) {
-        upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-up focus-popover' data-turbo='false' href='/detail?works=${value.upstream_id}' data-bs-placement='top' data-bs-title='Upstream work' data-bs-content='${value.upstream}'></a>`
-        upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-up focus-popover' data-turbo='false' href='/summary?upstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Ancestors counts:' data-bs-content='${value.upstreams_size}'></a>`
-        downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-down focus-popover' data-turbo='false' href='/summary?downstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Downstreams counts:' data-bs-content='${value.downstreams_size}'></a>`
+        upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-left focus-popover' data-turbo='false' href='/detail?works=${value.upstream_id}' data-bs-placement='top' data-bs-title='Upstream' data-bs-content='Click to show upstream work: ${value.upstream}'></a>`
+        upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' href='/summary?upstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
+        downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' href='/summary?downstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
         return ('<div class="btn-group" role="group">' + upstream + upstreams + downstreams + '</div>')
       }
     default:

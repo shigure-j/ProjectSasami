@@ -199,12 +199,14 @@ class WorksController < ApplicationController
     # up/down stream
     case parsed_table_param[:updown]
     when :up
-      public_works = public_works.where id: parsed_table_param[:updown_work].upstreams.map(&:id)
+      public_works = public_works.where id: (parsed_table_param[:updown_work].upstreams.map(&:id) << parsed_table_param[:updown_work].id)
     when :down
-      public_works = public_works.where id: parsed_table_param[:updown_work].downstreams.map(&:id)
+      public_works = public_works.where id: (parsed_table_param[:updown_work].downstreams.map(&:id) << parsed_table_param[:updown_work].id)
     end
     # default time sort
-    parsed_table_param[:sorter]["created_at"] = true if parsed_table_param[:sorter].empty?
+    if parsed_table_param[:sorter].empty?
+      parsed_table_param[:sorter]["created_at"] = parsed_table_param[:updown].nil?
+    end
 
     # output
     merge_result = Work.merge_summary(
@@ -243,6 +245,7 @@ class WorksController < ApplicationController
     i_params[:project]    = Project.find_or_create_by! name: work_params[:project]
     i_params[:stage]      = Stage.find_or_create_by! name: work_params[:stage]
     i_params[:design]     = Design.find_or_create_by! name: work_params[:design], project: i_params[:project]
+    i_params[:upstream]   = Work.find_by id: work_params[:upstream].to_i unless work_params[:upstream].nil?
     i_params[:is_private] = false if work_params[:is_private].nil?
     i_params[:owner]      = current_user if logged_in?
 
@@ -325,7 +328,9 @@ class WorksController < ApplicationController
                 {}
              else
                JSON.parse(params[:filter]).map do |name, value|
-                 if sub_filter[:object] && objs.key?(name)
+                 if sub_filter[:object] && name.eql?("relationship")
+                   ["upstream", {name: value}]
+                 elsif sub_filter[:object] && objs.key?(name)
                    #[[name, :name].join("."), value]
                    [name, {name: value}]
                  elsif sub_filter[:object] && name.match?("created_at")
@@ -389,6 +394,6 @@ class WorksController < ApplicationController
 
 private
   def work_params
-    params.require(:work).permit(:name, :design, :project, :path, :owner, :stage, :start_time, :end_time, :data, :signature, :is_private, pictures: [])
+    params.require(:work).permit(:name, :design, :project, :path, :owner, :stage, :start_time, :end_time, :data, :signature, :is_private, :upstream, pictures: [])
   end
 end

@@ -33,6 +33,7 @@ OptionParser.new do |args|
     stage:      "Specify work stage",
     project:    "Specify project",
     design:     "Specify design",
+    upstream:   "ID of upstream work",
     data:       "JSON file of work data"
   }.each do |opt, des|
     args.on(
