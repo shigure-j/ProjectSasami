@@ -52,8 +52,10 @@ window.cellFormatter = function(type, opt, add) {
     case "relationship":
       return function(value) {
         upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-left focus-popover' data-turbo='false' href='/detail?works=${value.upstream_id}' data-bs-placement='top' data-bs-title='Upstream' data-bs-content='Click to show upstream work: ${value.upstream}'></a>`
-        upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' href='/summary?upstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
-        downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' href='/summary?downstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
+        //upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' href='/summary?upstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
+        //downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' href='/summary?downstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
+        upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' onclick='traceRelated("up", ${value.id})' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
+        downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' onclick='traceRelated("down", ${value.id})' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
         return ('<div class="btn-group" role="group">' + upstream + upstreams + downstreams + '</div>')
       }
     default:
@@ -61,6 +63,17 @@ window.cellFormatter = function(type, opt, add) {
         return value
       }
   }
+}
+
+window.traceRelated = function(up_down, id) {
+  $table = $('#dashboard_view')
+  if (up_down == "up") {
+    new_url = "/data/summary?upstreams_of=" + id
+  } else {
+    new_url = "/data/summary?downstreams_of=" + id
+  }
+  $(".focus-popover").popover("hide") // W/A
+  $table.bootstrapTable('refresh', {url: new_url})
 }
 
 window.setColAsGroup = function(row, element, field, table) {
