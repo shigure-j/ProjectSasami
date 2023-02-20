@@ -167,13 +167,13 @@ window.addFocusKey = function() {
 
 window.focusKeys = function() {
   $li = $("#focusKeyList li")
-  focus_param = $li.toArray().map((i) => {return i.textContent}).join(",")
+  focus_param = $li.toArray().map((i) => {return escape(i.textContent)}).join(",")
   replaceParamVal("focus", focus_param)
   window.location=window.location.href
 }
 
 window.changeSub = function(sub) {
-  replaceParamVal("sub", sub)
+  replaceParamVal("sub", escape(sub))
   replaceParamVal("focus", "")
   $.get("/data/work?" + this.location.href.split("?")[1])
 }
