@@ -73,7 +73,7 @@ window.traceRelated = function(up_down, id) {
     new_url = "/data/summary?downstreams_of=" + id
   }
   $(".focus-popover").popover("hide") // W/A
-  $table.bootstrapTable('refresh', {url: new_url})
+  $table.bootstrapTable('refresh', {url: new_url, pageNumber: 1})
 }
 
 window.getQueryString = function(name) {
