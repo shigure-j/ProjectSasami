@@ -87,6 +87,8 @@ class Work < ApplicationRecord
     unless works_sub_tables.value? true
       works_sub_tables[works_sub_tables.keys.first] = true
     end
+    multi_subs = works_sub_tables.values.select{|i| i}.size > 1
+    sub_table_column = "table"
 
     # pictures
     works_pics = works.map do |work|
@@ -114,6 +116,7 @@ class Work < ApplicationRecord
         next if sub_table_data.nil?
         work_data = JSON.parse Zlib::inflate(sub_table_data.download)
         work_data.each do |record|
+          record = {sub_table_column => sub_table}.merge record if multi_subs
           record_key = focus.empty? ? record["key"] : record.delete("key")
           keys << record_key
           # focus

@@ -23,6 +23,6 @@ window.onpageshow = function() {
         $("#dashboard_view").bootstrapTable()
     }
     if ($("#work_table").size() != 0) {
-        $.get("/data/work?" + document.URL.split("?")[1])
+        $.get("/data/work?" + document.URL.split("?")[1]).then(detailTable)
     }
 }

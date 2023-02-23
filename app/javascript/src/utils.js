@@ -76,12 +76,17 @@ window.traceRelated = function(up_down, id) {
   $table.bootstrapTable('refresh', {url: new_url})
 }
 
-window.setColAsGroup = function(row, element, field, table) {
-  if (table.getOptions().groupBy && table.getOptions().groupByField == field) {
-    table.refreshOptions({groupBy: false})
-  } else {
-    table.refreshOptions({groupBy: true, groupByField: field, groupByToggle: true, groupByShowToggleIcon: true})
+window.getQueryString = function(name) {
+  var query_string = window.location.search
+  if (!query_string) return null; // 如果无参，返回null
+  var re = /[?&]?([^=]+)=([^&]*)/g;
+  var tokens;
+  while (tokens = re.exec(query_string)) {
+    if (decodeURIComponent(tokens[1]) === name) {
+      return decodeURIComponent(tokens[2]);
+    }
   }
+  return null;
 }
 
 window.replaceParamVal = function(paramName,replaceWith) {
@@ -173,10 +178,31 @@ window.focusKeys = function() {
 }
 
 window.changeSub = function(sub) {
-  replaceParamVal("sub", escape(sub))
+  if (event.ctrlKey) {
+    org_subs = getQueryString("sub")
+    if (org_subs == null) {
+      replaceParamVal("sub", escape(sub))
+    } else {
+      subs = org_subs.split(",")
+      if (subs.filter(i => i == escape(sub)).length >= 1) {
+        // off
+        new_subs = subs.filter(i => i !== escape(sub)).join(",")
+        if (new_subs.length == 0) {
+          return
+        }
+      } else {
+        // on
+        new_subs = org_subs + "," + escape(sub)
+      }
+      replaceParamVal("sub", new_subs)
+    }
+  } else {
+    replaceParamVal("sub", escape(sub))
+  }
   replaceParamVal("focus", "")
-  $.get("/data/work?" + this.location.href.split("?")[1])
+  $.get("/data/work?" + this.location.href.split("?")[1]).then(detailTable)
 }
+
 window.loadWork = function(incr, redirect) {
   $table = $('#dashboard_view')
   org_ids = []
@@ -195,10 +221,83 @@ window.loadWork = function(incr, redirect) {
     window.location.href="/detail?works=" + work_ids.join(",")
   } else {
     replaceParamVal("works", work_ids.join(","))
-    $.get("/data/work?works="+ work_ids.join(","))
+    $.get("/data/work?works="+ work_ids.join(",")).then(detailTable)
   }
 }
 
+window.modalView = function(content) {
+  $("#modal_view").replaceWith(content)
+  const myModalAlternative = new bootstrap.Modal('#modal_view_div')
+  myModalAlternative.show()
+  //myModalAlternative.addEventListener('shown.bs.modal', () => {
+  //  myInput.focus()
+  //})
+}
+
+window.detailTable = function(data) {
+/*
+ * data:
+ *  userPayload:
+ *    subs
+ *    keys
+ */
+//TODO Formmater
+
+  $table = $("#work_table")
+  $nav = $("#sub_tables_nav")
+
+  var sub_tables = data.userPayload.subs
+  var sub_tables_names = Object.keys(sub_tables)
+  var table_keys = data.userPayload.keys
+  delete data.userPayload
+  var table_opt  = data
+  table_opt["height"] = window.innerHeight - 100
+  $table.bootstrapTable("destroy")
+  $table.bootstrapTable(table_opt)
+
+  if (sub_tables_names.length > 6) {
+    var active_subs = Object.entries(sub_tables).map(i => {if(i[1]) {return i[0]}}).filter(i => i !== undefined).join(",")
+    $nav.replaceWith('<div id="sub_tables_nav" class="dropdown"></div>')
+    $nav = $("#sub_tables_nav")
+    $nav.append(`<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Table: ${active_subs} </button>`)
+    $nav.append('<ul id="sub_table_dropdown" class="dropdown-menu"></ul>')
+    $dropdown = $("#sub_table_dropdown")
+    sub_tables_names.forEach(n_table => {
+      if (sub_tables[n_table]) {
+        var active_flag = "active"
+      } else {
+        var active_flag = ""
+      }
+      $dropdown.append(`<li ><a class="dropdown-item ${active_flag}" onclick="changeSub('${n_table}')">${n_table}</a></li>`)
+    })
+  } else {
+    $nav.replaceWith('<ul class="nav nav-tabs" id="sub_tables_nav"></ul>')
+    $nav = $("#sub_tables_nav")
+    sub_tables_names.forEach(n_table => {
+      if (sub_tables[n_table]) {
+        var active_flag = "active"
+      } else {
+        var active_flag = ""
+      }
+      $nav.append(`<li class="nav-item"><a role="button" class="nav-link ${active_flag}" onclick="changeSub('${n_table}')">${n_table}</a></li>`)
+    })
+  }
+
+  $focus_sel = $("#focusSelect")
+  $("#focusKeyList").empty()
+  $focus_sel.empty()
+  table_keys.forEach(key => {
+    window.addFocusKeyOption(key)
+  })
+}
+/*
+window.setColAsGroup = function(row, element, field, table) {
+  if (table.getOptions().groupBy && table.getOptions().groupByField == field) {
+    table.refreshOptions({groupBy: false})
+  } else {
+    table.refreshOptions({groupBy: true, groupByField: field, groupByToggle: true, groupByShowToggleIcon: true})
+  }
+}
 window.loadWorks = function() {
   $table = $('#dashboard_view')
   work_ids = $table.bootstrapTable('getSelections').map(function(row) {
@@ -212,13 +311,11 @@ window.loadWorks = function() {
     }
   )
 }
-
 window.getSummary = function(params) {
   $.get("/data/summary?" + params.data).then(function(res) {
     params.success(res)
   })
 }
-
 window.loadSum = function(param) {
   $.get("data?" + param).then (
     function (res) {
@@ -226,11 +323,4 @@ window.loadSum = function(param) {
     }
   )
 }
-window.modalView = function(content) {
-  $("#modal_view").replaceWith(content)
-  const myModalAlternative = new bootstrap.Modal('#modal_view_div')
-  myModalAlternative.show()
-  //myModalAlternative.addEventListener('shown.bs.modal', () => {
-  //  myInput.focus()
-  //})
-}
+*/

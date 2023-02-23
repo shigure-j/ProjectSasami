@@ -114,7 +114,12 @@ class WorksController < ApplicationController
         })
       end
     end
+    user_payload = {
+      subs: merge_result[:sub_tables],
+      keys: merge_result[:keys]
+    }
     if init_only
+      # Init for side page
       data_url = "/data/work?side=1&pagination=1&works=#{params[:works]}"
       data_url += "&sub=#{params[:sub]}" unless params[:sub].nil? 
       data_url += "&focus=#{params[:focus]}" unless params[:focus].nil?
@@ -122,22 +127,23 @@ class WorksController < ApplicationController
         fixedColumns: true, fixedNumber: fix_cols, columns: columns,
         sidePagination: :server,
         pagination: true,
-        url: data_url
+        url: data_url,
+        userPayload: user_payload
       }
     elsif side_page
+      # Data for side page
       respon_data = {rows: merge_result[:data], total: merge_result[:data_size]}
     else
-      respon_data = {fixedColumns: true, fixedNumber: fix_cols, columns: columns, data: merge_result[:data]}
+      # Init + Data for client
+      respon_data = {
+        fixedColumns: true, fixedNumber: fix_cols, columns: columns,
+        data: merge_result[:data],
+        userPayload: user_payload
+      }
     end
 
     # Response
     respond_to do |res|
-      res.js { render 'dashboard/table', locals: {
-          table_id: "work_table", table_format: [],
-          table_data: respon_data, sub_tables: merge_result[:sub_tables],
-          table_keys: merge_result[:keys]
-        }
-      }
       res.json { render json: respon_data }
     end
   end
