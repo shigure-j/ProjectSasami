@@ -118,9 +118,23 @@ window.editWork = function() {
   }
 }
 
+window.sumTableButtons = function() {
+  return {
+    btnRefresh: {
+      icon: 'bi-arrow-clockwise',
+      event: function () {
+        $('#dashboard_view').bootstrapTable('refresh', {url: "/data/summary", pageNumber: 1})
+      },
+      attributes: {
+        title: 'Reset'
+      }
+    }
+  }
+}
+
 window.detailTableButtons = function() {
   return {
-      //text: 'Show By Page',
+    //text: 'Show By Page',
     btnSwitchPage: {
       icon: 'bi-file-earmark-break',
       event: function () {
@@ -178,7 +192,7 @@ window.focusKeys = function() {
 }
 
 window.changeSub = function(sub) {
-  if (event.ctrlKey) {
+  if (event.button == 1) {
     org_subs = getQueryString("sub")
     if (org_subs == null) {
       replaceParamVal("sub", escape(sub))
@@ -196,8 +210,10 @@ window.changeSub = function(sub) {
       }
       replaceParamVal("sub", new_subs)
     }
-  } else {
+  } else if (event.button == 0) {
     replaceParamVal("sub", escape(sub))
+  } else {
+    return
   }
   replaceParamVal("focus", "")
   $.get("/data/work?" + this.location.href.split("?")[1]).then(detailTable)
@@ -221,6 +237,7 @@ window.loadWork = function(incr, redirect) {
     window.location.href="/detail?works=" + work_ids.join(",")
   } else {
     replaceParamVal("works", work_ids.join(","))
+    $table.bootstrapTable("uncheckAll")
     $.get("/data/work?works="+ work_ids.join(",")).then(detailTable)
   }
 }
@@ -268,7 +285,7 @@ window.detailTable = function(data) {
       } else {
         var active_flag = ""
       }
-      $dropdown.append(`<li ><a class="dropdown-item ${active_flag}" onclick="changeSub('${n_table}')">${n_table}</a></li>`)
+      $dropdown.append(`<li ><a class="dropdown-item ${active_flag}" onmouseup="changeSub('${n_table}')">${n_table}</a></li>`)
     })
   } else {
     $nav.replaceWith('<ul class="nav nav-tabs" id="sub_tables_nav"></ul>')
@@ -279,7 +296,7 @@ window.detailTable = function(data) {
       } else {
         var active_flag = ""
       }
-      $nav.append(`<li class="nav-item"><a role="button" class="nav-link ${active_flag}" onclick="changeSub('${n_table}')">${n_table}</a></li>`)
+      $nav.append(`<li class="nav-item"><a role="button" class="nav-link ${active_flag}" onmouseup="changeSub('${n_table}')">${n_table}</a></li>`)
     })
   }
 
