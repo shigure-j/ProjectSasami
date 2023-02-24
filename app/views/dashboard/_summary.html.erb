@@ -1,5 +1,6 @@
 <table  
   id="dashboard_view"
+  class="text-truncate"
   data-advanced-search="true"
   data-cache="false"
   data-filter-control="true"
@@ -29,6 +30,9 @@
         <th data-field="<%= key %>"
           <% unless value[:formatter].nil? %>
             data-formatter="<%= "cellFormatterDashboardView#{no}" %>"
+          <% end %>
+          <% unless value[:width].nil? %>
+            data-width="<%= value[:width] %>"
           <% end %>
           <% if @filter_data.key? key %>
             data-filter-control="select"

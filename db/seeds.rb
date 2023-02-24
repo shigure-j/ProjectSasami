@@ -33,21 +33,25 @@ format.format = %q({
     "relationship": {
         "title": "related",
         "type": "relationship",
-        "option": ""
+        "option": "",
+        "width": "140"
     },
     "path": {
         "type": "path",
-        "option": ""
+        "option": "",
+        "width": "80"
     },
     "created_at": {
         "title": "created",
         "type": "datetime",
-        "option": "yyyy/MM/dd HH:mm"
+        "option": "yyyy/MM/dd HH:mm",
+        "width": "160"
     },
     "is_private": {
         "title": "private",
         "type": "boolean",
-        "option": ""
+        "option": "",
+        "width": "110"
     }
 })
 format.save
