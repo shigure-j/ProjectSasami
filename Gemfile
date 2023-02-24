@@ -50,6 +50,8 @@ gem "sorcery"
 gem "caxlsx"
 gem "caxlsx_rails"
 
+gem "puma-status"
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 

@@ -20,18 +20,21 @@ class DashboardController < ApplicationController
   end
 
   def statistic
-    attachements = ActiveStorage::Blob.all  
-    attachements_bytes = attachements.reduce(0) {|sum, n| sum + n.byte_size}
     db_file = Rails.root + Rails.application.config.database_configuration[Rails.env]["database"]
-    {
-      works_count:    Work.count,
-      projects_count: Project.count,
-      designs_count:  Design.count,
-      owners_count:   Owner.count,
-      file_size:      convert_file_size(attachements_bytes),
-      file_count:     attachements.size,
-      db_size:        convert_file_size(db_file.size)
-    }
+    db_mtime = db_file.mtime
+    Rails.cache.fetch("custom_cache/statistic/#{db_mtime}", expires_in: 12.hours) do
+      attachements = ActiveStorage::Blob.all  
+      attachements_bytes = attachements.reduce(0) {|sum, n| sum + n.byte_size}
+      {
+        works_count:    Work.count,
+        projects_count: Project.count,
+        designs_count:  Design.count,
+        owners_count:   Owner.count,
+        file_size:      convert_file_size(attachements_bytes),
+        file_count:     attachements.size,
+        db_size:        convert_file_size(db_file.size)
+      }
+    end
   end
 
   def convert_file_size(org_size)

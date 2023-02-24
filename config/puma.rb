@@ -41,3 +41,10 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
+
+# User setting
+state_path        'tmp/pids/puma.state'
+state_permission  0600
+if Rails.configuration.puma_ctrl_port
+  activate_control_app "tcp://:#{Rails.configuration.puma_ctrl_port}", {auth_token: Rails.configuration.puma_ctrl_token}
+end

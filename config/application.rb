@@ -29,5 +29,7 @@ module ProjectSasami
     config.hosts << "localhost"
     config.hosts << "127.0.0.1"
     #config.hosts << "server_ip" ;# Add your server IP here
+    config.puma_ctrl_port  = nil ; # Set a port number if puma control needed
+    config.puma_ctrl_token = nil ; # Set a token for puma control if puma_ctrl_port specified
   end
 end

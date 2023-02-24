@@ -90,6 +90,7 @@ GEM
     caxlsx_rails (0.6.3)
       actionpack (>= 3.1)
       caxlsx (>= 3.0)
+    colorize (0.8.1)
     concurrent-ruby (1.1.10)
     crass (1.0.6)
     cssbundling-rails (1.1.2)
@@ -147,6 +148,7 @@ GEM
       timeout
     net-smtp (0.3.3)
       net-protocol
+    net_http_unix (0.2.2)
     nio4r (2.5.8)
     nokogiri (1.14.0-x86_64-linux)
       racc (~> 1.4)
@@ -160,9 +162,14 @@ GEM
       rack (>= 1.2, < 4)
       snaky_hash (~> 2.0)
       version_gem (~> 1.1)
+    parallel (1.22.1)
     public_suffix (5.0.1)
     puma (5.6.5)
       nio4r (~> 2.0)
+    puma-status (1.5)
+      colorize (~> 0.8)
+      net_http_unix (~> 0.2)
+      parallel (~> 1)
     racc (1.6.2)
     rack (2.2.6.2)
     rack-test (2.0.2)
@@ -263,6 +270,7 @@ DEPENDENCIES
   jsbundling-rails
   mini_magick
   puma (~> 5.0)
+  puma-status
   rails (~> 7.0.4)
   selenium-webdriver
   sorcery
