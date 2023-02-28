@@ -1,14 +1,17 @@
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWorks" aria-labelledby="offcanvasLabel">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasWorks">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasLabel">Works</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <h5 class="offcanvas-title" id="offcanvasLabel">Select Works</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body" id="nav-table-div">
     <div class="row py-1">
       <div class="col">
-        <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks" onclick="loadWork(0)" type="button" class="btn btn-secondary">Show</button>
-        <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks" onclick="loadWork(1)" type="button" class="btn btn-secondary">Add</button>
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+        <div class="btn-group" role="group">
+          <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" onclick="loadWork(0)" type="button" class="btn btn-secondary" title="Show">            <i class="bi bi-eye"></i></button>
+          <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" onclick="loadWork(1)" type="button" class="btn btn-secondary" title="Add To View">     <i class="bi bi-plus-lg"></i></button>
+          <button data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" onclick="loadWork(2)" type="button" class="btn btn-secondary" title="Remove From View"><i class="bi bi-dash-lg"></i></button>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal" title="Edit"><i class="bi bi-pencil-square"></i></button>
+        </div>
       </div>
       <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
     </div>
@@ -18,8 +21,11 @@
 
 <div class="row d-flex flex-fill">
   <div class="col-1 py-5" style="max-width: 60px;">
-    <div class="btn btn-light d-inline-flex align-items-center" style="height: 100%;" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" aria-controls="offcanvasWorks">
+    <div class="btn btn-outline-secondary d-inline-flex align-items-center" style="height: 50%;" onclick="switchSummary(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" title="Select Works">
       <i class="bi bi-arrow-bar-right"></i>
+    </div>
+    <div class="btn btn-outline-secondary d-inline-flex align-items-center" style="height: 50%;" onclick="switchSummary(1)"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasWorks" title="Current Works">
+      <i class="bi bi-arrow-bar-left"></i>
     </div>
   </div>
   <div class="col-1 flex-grow-1">
@@ -60,12 +66,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="focusModal" tabindex="-1" aria-labelledby="focusModalLabel" aria-hidden="true">
+<div class="modal fade" id="focusModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="focusModalLabel">Focus on keys</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div class="d-flex">

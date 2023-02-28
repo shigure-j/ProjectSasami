@@ -74,6 +74,11 @@ window.traceRelated = function(up_down, id) {
   }
   $(".focus-popover").popover("hide") // W/A
   $table.bootstrapTable('refresh', {url: new_url, pageNumber: 1})
+  offcavasTitle = $("#offcanvasLabel")
+  if (offcavasTitle.size()) {
+    switchSummaryFlag = 1
+    offcavasTitle.text("Related Works")
+  }
 }
 
 window.getQueryString = function(name) {
@@ -123,7 +128,9 @@ window.sumTableButtons = function() {
     btnRefresh: {
       icon: 'bi-arrow-clockwise',
       event: function () {
-        $('#dashboard_view').bootstrapTable('refresh', {url: "/data/summary", pageNumber: 1})
+        //$('#dashboard_view').bootstrapTable('refresh', {url: "/data/summary", pageNumber: 1})
+        switchSummaryFlag = 1
+        switchSummary(0)
       },
       attributes: {
         title: 'Reset'
@@ -230,15 +237,31 @@ window.loadWork = function(incr, redirect) {
       }
     })
   }
-  work_ids = org_ids.concat($table.bootstrapTable('getSelections').map(function(row) {
-    return row.id
-  }))
+  selected_works = $table.bootstrapTable('getSelections').map(row => {return row.id})
+  if (incr == 2) {
+    work_ids = org_ids.filter(i => selected_works.indexOf(i) == -1)
+  } else {
+    work_ids = org_ids.concat(selected_works)
+  }
   if (redirect) {
     window.location.href="/detail?works=" + work_ids.join(",")
   } else {
     replaceParamVal("works", work_ids.join(","))
     $table.bootstrapTable("uncheckAll")
     $.get("/data/work?works="+ work_ids.join(",")).then(detailTable)
+  }
+}
+
+window.switchSummary = function(current) {
+  if (current) {
+    switchSummaryFlag = 1
+    $("#offcanvasLabel").text("Current Works")
+    $('#dashboard_view').bootstrapTable('load', current_work_table)
+  } else if (switchSummaryFlag) {
+    switchSummaryFlag = 0
+    $("#offcanvasLabel").text("Select Works")
+    //$('#dashboard_view').bootstrapTable('refresh')
+    $('#dashboard_view').bootstrapTable('refresh', {url: "/data/summary", pageNumber: 1})
   }
 }
 
@@ -265,6 +288,7 @@ window.detailTable = function(data) {
 
   var sub_tables = data.userPayload.subs
   var sub_tables_names = Object.keys(sub_tables)
+  window.current_work_table = data.userPayload.summary
   var table_keys = data.userPayload.keys
   delete data.userPayload
   var table_opt  = data

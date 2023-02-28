@@ -40,12 +40,14 @@ class Work < ApplicationRecord
 
   def self.merge_summary(works: [], filter: {}, search: nil, sorter: {}, range: nil)
     # filter
-    join_table = filter.keys.map(&:to_sym).intersection [:project, :design, :owner, :stage, :upstream]
-    works = if join_table.empty?
-              works.where filter
-            else
-              works.joins(join_table).where filter
-            end
+    unless filter.empty?
+      join_table = filter.keys.map(&:to_sym).intersection [:project, :design, :owner, :stage, :upstream]
+      works = if join_table.empty?
+                works.where filter
+              else
+                works.joins(join_table).where filter
+              end
+    end
 
     # search
     unless search.nil?
@@ -215,7 +217,8 @@ class Work < ApplicationRecord
       filter_data: filter_data,
       keys: keys,
       indexes: indexes,
-      sub_tables: works_sub_tables
+      sub_tables: works_sub_tables,
+      summary: Work.merge_summary(works: works)
     }
   end
 

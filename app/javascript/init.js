@@ -25,4 +25,5 @@ window.onpageshow = function() {
     if ($("#work_table").size() != 0) {
         $.get("/data/work?" + document.URL.split("?")[1]).then(detailTable)
     }
+    switchSummaryFlag = 0
 }

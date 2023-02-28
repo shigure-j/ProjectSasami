@@ -115,8 +115,12 @@ class WorksController < ApplicationController
       end
     end
     user_payload = {
-      subs: merge_result[:sub_tables],
-      keys: merge_result[:keys]
+      subs:     merge_result[:sub_tables],
+      keys:     merge_result[:keys],
+      summary:  {
+        rows:   merge_result[:summary][:data],
+        total:  merge_result[:summary][:total]
+      }
     }
     if init_only
       # Init for side page

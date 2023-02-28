@@ -12,26 +12,14 @@
   <div class="col flex-grow-1">
     <div class="row py-1">
       <div class="col">
-        <button onclick="loadWork(0, 1)" type="button" class="btn btn-secondary">Show</button>
-        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+        <div class="btn-group" role="group">
+          <button onclick="loadWork(0, 1)" type="button" class="btn btn-secondary btn-lg" title="Show"><i class="bi bi-eye"></i></button>
+          <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal" data-bs-target="#editModal" title="Edit"><i class="bi bi-pencil-square"></i></button>
+        </div>
       </div>
       <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
     </div>
     <%= render partial: "summary", locals: {format: @format, data_param: @data_param} %>
-  </div>
-</div>
-
-<div>
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="copied_toast" class="toast" role="alert" data-bs-delay="3000">
-      <div class="toast-header">
-        <strong class="me-auto">Text copied</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-      </div>
-      <div class="toast-body">
-        Use <kbd><kbd>Ctrl</kbd> + <kbd>V</kbd></kbd> to paste
-      </div>
-    </div>
   </div>
 </div>
 
