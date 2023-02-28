@@ -125,8 +125,8 @@ class WorksController < ApplicationController
     if init_only
       # Init for side page
       data_url = "/data/work?side=1&pagination=1&works=#{params[:works]}"
-      data_url += "&sub=#{params[:sub]}" unless params[:sub].nil? 
-      data_url += "&focus=#{params[:focus]}" unless params[:focus].nil?
+      data_url += "&sub=#{CGI.escapeURIComponent(params[:sub])}" unless params[:sub].nil? 
+      data_url += "&focus=#{CGI.escapeURIComponent(params[:focus])}" unless params[:focus].nil?
       respon_data = {
         fixedColumns: true, fixedNumber: fix_cols, columns: columns,
         sidePagination: :server,
