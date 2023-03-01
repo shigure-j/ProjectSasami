@@ -218,7 +218,7 @@ class Work < ApplicationRecord
       keys: keys,
       indexes: indexes,
       sub_tables: works_sub_tables,
-      summary: Work.merge_summary(works: works)
+      summary: Work.merge_summary(works: works, range: nil)[:data]
     }
   end
 

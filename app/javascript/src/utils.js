@@ -73,10 +73,11 @@ window.traceRelated = function(up_down, id) {
     new_url = "/data/summary?downstreams_of=" + id
   }
   $(".focus-popover").popover("hide") // W/A
-  $table.bootstrapTable('refresh', {url: new_url, pageNumber: 1})
+  //$table.bootstrapTable('refreshOptions', {url: new_url, sidePagination: "server", pageNumber: 1})
+  switchSummary(0, new_url)
   offcavasTitle = $("#offcanvasLabel")
   if (offcavasTitle.size()) {
-    switchSummaryFlag = 1
+    switchSummaryFlag = 2
     offcavasTitle.text("Related Works")
   }
 }
@@ -128,7 +129,6 @@ window.sumTableButtons = function() {
     btnRefresh: {
       icon: 'bi-arrow-clockwise',
       event: function () {
-        //$('#dashboard_view').bootstrapTable('refresh', {url: "/data/summary", pageNumber: 1})
         switchSummaryFlag = 1
         switchSummary(0)
       },
@@ -252,16 +252,20 @@ window.loadWork = function(incr, redirect) {
   }
 }
 
-window.switchSummary = function(current) {
-  if (current) {
+window.switchSummary = function(current, new_url) {
+  if (current && switchSummaryFlag !== current) {
     switchSummaryFlag = 1
     $("#offcanvasLabel").text("Current Works")
-    $('#dashboard_view').bootstrapTable('load', current_work_table)
-  } else if (switchSummaryFlag) {
+    $("#dashboard_view").bootstrapTable('clearFilterControl')
+    $('#dashboard_view').bootstrapTable('refreshOptions', {url: null, data: current_work_table, sidePagination: "client", pageNumber: 1, sortPriority: null, sortName: null})
+  } else if (!current && switchSummaryFlag) {
     switchSummaryFlag = 0
+    if (new_url == undefined) {
+      new_url = "/data/summary"
+    }
     $("#offcanvasLabel").text("Select Works")
-    //$('#dashboard_view').bootstrapTable('refresh')
-    $('#dashboard_view').bootstrapTable('refresh', {url: "/data/summary", pageNumber: 1})
+    $("#dashboard_view").bootstrapTable('clearFilterControl')
+    $('#dashboard_view').bootstrapTable('refreshOptions', {url: new_url, sidePagination: "server", pageNumber: 1, sortPriority: null, sortName: null})
   }
 }
 

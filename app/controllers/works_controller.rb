@@ -117,10 +117,7 @@ class WorksController < ApplicationController
     user_payload = {
       subs:     merge_result[:sub_tables],
       keys:     merge_result[:keys],
-      summary:  {
-        rows:   merge_result[:summary][:data],
-        total:  merge_result[:summary][:total]
-      }
+      summary:  merge_result[:summary]
     }
     if init_only
       # Init for side page
@@ -357,10 +354,12 @@ class WorksController < ApplicationController
              end
     sorter =  if !params[:multiSort].nil?
                 sorter = params[:multiSort].values.map do |n|
-                  [n[:sortName], n[:sortOrder].eql?("desc")]
+                  name = objs.fetch(n[:sortName]) {n[:sortName]}
+                  [name, n[:sortOrder].eql?("desc")]
                 end.to_h
               elsif !params[:sort].nil?
-                { params[:sort] => params[:order].eql?("desc") }
+                name = objs.fetch(params[:sort]) {params[:sort]}
+                { name => params[:order].eql?("desc") }
               else
                 {}
               end
