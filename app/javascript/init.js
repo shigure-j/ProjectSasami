@@ -23,7 +23,13 @@ window.onpageshow = function() {
         $("#dashboard_view").bootstrapTable()
     }
     if ($("#work_table").size() != 0) {
-        $.get("/data/work?" + document.URL.split("?")[1]).then(detailTable)
+        $("#summary_button").addClass("active")
+        $("#current_button").addClass("active")
+        $.get("/data/work?" + document.URL.split("?")[1]).then(data => {
+            detailTable(data)
+            $("#summary_button").removeClass("active")
+            $("#current_button").removeClass("active")
+        })
     }
     switchSummaryFlag = 0
 }
