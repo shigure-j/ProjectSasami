@@ -65,6 +65,7 @@
 </div>
 <script>
   document.getElementById('editResultModal').addEventListener('hide.bs.modal', event => {
-    window.location.reload()
+    //window.location.reload()
+    $("#dashboard_view").bootstrapTable("refresh")
   })
 </script>
