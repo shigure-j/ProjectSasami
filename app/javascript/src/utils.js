@@ -121,6 +121,10 @@ window.editWork = function() {
     case "private":
       $("#edit_result").attr("src", "/data/edit?is_private=1&works="+ work_ids.join(","))
       break;
+    case "upstream":
+      up_id = $("#upstream_id")[0].value
+      $("#edit_result").attr("src", "/data/edit?upstream=" + up_id + "&works=" + work_ids.join(","))
+      break;
   }
 }
 
