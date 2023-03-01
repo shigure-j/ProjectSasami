@@ -19,13 +19,18 @@ class WorksController < ApplicationController
           @message << "Changed #{works.size} works to #{params[:is_private].eql?("1") ? "private" : "public"}."
           works.each { |work| work.update is_private: params[:is_private] }
         elsif !params[:upstream].nil?
-          up_work = Work.find_by id: params[:upstream]
-          if up_work.nil? ||
-              (up_work.is_private && !up_work.owner.eql?(current_user))
-            @message << "Upstream work #{params[:upstream]} not found."
+          if params[:upstream].empty?
+            @message << "Remove upstream work from #{works.size} works."
+            works.each { |work| work.update upstream: nil }
           else
-            @message << "Set upstream work of #{works.size} works to #{up_work.name}(id: #{up_work.id})."
-            works.each { |work| work.update upstream: up_work }
+            up_work = Work.find_by id: params[:upstream]
+            if up_work.nil? ||
+                (up_work.is_private && !up_work.owner.eql?(current_user))
+              @message << "Upstream work #{params[:upstream]} not found."
+            else
+              @message << "Set upstream work of #{works.size} works to #{up_work.name}(id: #{up_work.id})."
+              works.each { |work| work.update upstream: up_work }
+            end
           end
         end
       end

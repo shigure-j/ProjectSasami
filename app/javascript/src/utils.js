@@ -51,11 +51,18 @@ window.cellFormatter = function(type, opt, add) {
       }
     case "relationship":
       return function(value) {
-        upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-left focus-popover' data-turbo='false' href='/detail?works=${value.upstream_id}' data-bs-placement='top' data-bs-title='Upstream' data-bs-content='Click to show upstream work: ${value.upstream}'></a>`
-        //upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' href='/summary?upstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
-        //downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' href='/summary?downstreams_of=${value.id}' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
-        upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' onclick='traceRelated("up", ${value.id})' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
-        downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' onclick='traceRelated("down", ${value.id})' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
+        if (value.upstream_id == undefined) {
+          upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-left focus-popover disabled'></a>`
+          upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover disabled'></a>`
+        } else {
+          upstream = `<a type="button" class='btn btn-secondary bi bi-chevron-left focus-popover' data-turbo='false' href='/detail?works=${value.upstream_id}' data-bs-placement='top' data-bs-title='Upstream' data-bs-content='Click to show upstream work: ${value.upstream}'></a>`
+          upstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-double-left focus-popover' data-turbo='false' onclick='traceRelated("up", ${value.id})' data-bs-placement='top' data-bs-title='Ancestors' data-bs-content='Click to list ${value.upstreams_size} ancestor works'></a>`
+        }
+        if (value.downstreams_size == 0) {
+          downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover disabled'></a>`
+        } else {
+          downstreams = `<a type="button" class='btn btn-secondary bi bi-chevron-bar-right focus-popover' data-turbo='false' onclick='traceRelated("down", ${value.id})' data-bs-placement='top' data-bs-title='Downstreams' data-bs-content='Click to list ${value.downstreams_size} downstream works'></a>`
+        }
         return ('<div class="btn-group" role="group">' + upstream + upstreams + downstreams + '</div>')
       }
     default:
@@ -73,11 +80,10 @@ window.traceRelated = function(up_down, id) {
     new_url = "/data/summary?downstreams_of=" + id
   }
   $(".focus-popover").popover("hide") // W/A
-  //$table.bootstrapTable('refreshOptions', {url: new_url, sidePagination: "server", pageNumber: 1})
+  switchSummaryFlag = 2
   switchSummary(0, new_url)
   offcavasTitle = $("#offcanvasLabel")
   if (offcavasTitle.size()) {
-    switchSummaryFlag = 2
     offcavasTitle.text("Related Works")
   }
 }
