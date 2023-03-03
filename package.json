@@ -17,6 +17,7 @@
     "jquery": "^3.6.3",
     "jquery-resizable-columns": "^0.2.3",
     "jquery-ui": "^1.13.2",
+    "orgchart": "^3.5.0",
     "sass": "^1.56.1",
     "tablednd": "^1.0.5"
   },

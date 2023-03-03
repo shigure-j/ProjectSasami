@@ -61,6 +61,26 @@ class WorksController < ApplicationController
     render :result
   end
 
+  def get_chart
+    public_works = Work.filter_by_owner (logged_in? ? current_user : nil)
+    # Work record
+    begin
+      @works = public_works.find params[:works].split(",")
+    rescue
+      #ActiveRecord::RecordNotFound
+      render js: 'alert("Invalid request!");'
+      return
+    end
+    respon_data = Work.merge_chart(
+      works: @works,
+      access_owner: current_user
+    )
+    # Response
+    respond_to do |res|
+      res.json { render json: respon_data }
+    end
+  end
+
   def get_work
     side_page = !params[:pagination].nil? && params[:pagination].eql?("1")
     init_only = side_page && params[:side].nil?
@@ -83,6 +103,7 @@ class WorksController < ApplicationController
     parsed_table_param = parse_table_param params
     # Merge
     merge_result = Work.merge_works(
+      access_owner: current_user,
       works: @works,
       sub_tables: sub_tables,
       init_only: init_only,
@@ -183,6 +204,7 @@ class WorksController < ApplicationController
     parsed_table_param = parse_table_param params
     # Merge
     merge_result = Work.merge_works(
+      access_owner: current_user,
       works: @works,
       sub_tables: sub_tables,
       focus:  @focus,
@@ -222,9 +244,9 @@ class WorksController < ApplicationController
     # up/down stream
     case parsed_table_param[:updown]
     when :up
-      public_works = public_works.where id: (parsed_table_param[:updown_work].upstreams.map(&:id) << parsed_table_param[:updown_work].id)
+      public_works = public_works.where id: (parsed_table_param[:updown_work].get_upstreams(current_user).map(&:id) << parsed_table_param[:updown_work].id)
     when :down
-      public_works = public_works.where id: (parsed_table_param[:updown_work].downstreams.map(&:id) << parsed_table_param[:updown_work].id)
+      public_works = public_works.where id: (parsed_table_param[:updown_work].get_downstreams.map(&:id) << parsed_table_param[:updown_work].id)
     end
     # default time sort
     if parsed_table_param[:sorter].empty?
@@ -233,6 +255,7 @@ class WorksController < ApplicationController
 
     # output
     merge_result = Work.merge_summary(
+      access_owner: current_user,
       works:  public_works,
       sorter: parsed_table_param[:sorter],
       filter: parsed_table_param[:filter],

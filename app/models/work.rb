@@ -8,25 +8,27 @@ class Work < ApplicationRecord
   has_many  :downstreams, class_name: "Work", foreign_key: "upstream_id"
   belongs_to  :upstream,  class_name: "Work", optional: true
 
-  def attributes_with_references(name_only=false)
-    self.attributes.to_a.map do |attr|
-      if attr[0].match?("_id$")
-        ref_name = attr[0].sub(/_id$/,'')
-        if name_only
-          [ref_name , (self.instance_eval(ref_name).name rescue nil)]
+  def attributes_with_references(name_only: false, with_relationshiop: true, access_owner: nil)
+    (with_relationshiop ? {relationship: relationship(access_owner)} : {}).merge(
+      self.attributes.to_a.map do |attr|
+        if attr[0].match?("_id$")
+          ref_name = attr[0].sub(/_id$/,'')
+          if name_only
+            [ref_name , (self.instance_eval(ref_name).name rescue nil)]
+          else
+            [ref_name , self.instance_eval(ref_name)]
+          end
+        elsif attr[0].eql?("name")
+          if name_only
+            [attr[0], self.name]
+          else
+            [attr[0], self]
+          end
         else
-          [ref_name , self.instance_eval(ref_name)]
+          attr
         end
-      elsif attr[0].eql?("name")
-        if name_only
-          [attr[0], self.name]
-        else
-          [attr[0], self]
-        end
-      else
-        attr
-      end
-    end.to_h.merge({relationship: relationship})
+      end.to_h
+    )
   end
 
   def self.filter_by_owner(owner=nil)
@@ -38,7 +40,7 @@ class Work < ApplicationRecord
     public_works = Work.excluding private_works
   end
 
-  def self.merge_summary(works: [], filter: {}, search: nil, sorter: {}, range: nil)
+  def self.merge_summary(works: [], filter: {}, search: nil, sorter: {}, range: nil, access_owner: nil)
     # filter
     unless filter.empty?
       join_table = filter.keys.map(&:to_sym).intersection [:project, :design, :owner, :stage, :upstream]
@@ -75,12 +77,12 @@ class Work < ApplicationRecord
     
     # output
     {
-      data: works.map { |work| work.attributes_with_references true },
+      data: works.map { |work| work.attributes_with_references(name_only: true, access_owner: access_owner) },
       total: total
     }
   end
 
-  def self.merge_works(works: [], sub_tables: [], focus: [], filter: {}, search: nil, sorter: {}, init_only: false, range: nil, view_context: nil)
+  def self.merge_works(works: [], sub_tables: [], focus: [], filter: {}, search: nil, sorter: {}, init_only: false, range: nil, view_context: nil, access_owner: nil)
     # sub_tables
     works_sub_tables = works.map {|work| work.query_sub_table}.flatten.uniq.map {|n| [n, false]}.to_h
     sub_tables.each do |sub_table|
@@ -218,8 +220,46 @@ class Work < ApplicationRecord
       keys: keys,
       indexes: indexes,
       sub_tables: works_sub_tables,
-      summary: Work.merge_summary(works: works, range: nil)[:data]
+      summary: Work.merge_summary(works: works, range: nil, access_owner: access_owner)[:data]
     }
+  end
+
+  def self.merge_chart(works: [], access_owner: nil)
+    head_works =  works.map do |work|
+      (work.get_upstreams(access_owner) << work).first
+    end.uniq
+
+    designs = {}
+    projects = {}
+    head_works.each do |work|
+      design = work.design
+      designs[design] = {
+        name: design.name,
+        stage: :design,
+        children: []
+      } unless designs.key? design
+      designs[design][:children] << work.flatten_downstreams(access_owner)
+    end
+
+    designs.each do |design, design_content|
+      project = design.project
+      projects[project] = {
+        name: project.name,
+        stage: :project,
+        children: []
+      } unless projects.key? project
+      projects[project][:children] << design_content
+    end
+
+    if projects.size.eql? 1
+      projects.values.first
+    else
+      {
+        name: "",
+        stage: "",
+        children: projects.values
+      }
+    end
   end
 
   def attach_datas(data_content)
@@ -249,23 +289,55 @@ class Work < ApplicationRecord
     end
   end
 
-  def relationship
-    {
-      id: id,
-      upstream: (upstream.name rescue nil),
-      upstream_id: upstream_id,
-      upstreams_size: upstreams.size,
-      downstreams_size: downstreams.size
-    }
+  def allow?(access_owner=nil)
+    !is_private || (owner.eql? access_owner)
   end
 
-  def upstreams
+  def get_upstreams(access_owner=nil)
     upstreams = []
     n_upstream = upstream
-    until n_upstream.nil? || upstreams.include?(n_upstream)
+    until n_upstream.nil? || 
+          upstreams.include?(n_upstream) ||
+          !n_upstream.allow?(access_owner)
       upstreams << n_upstream
       n_upstream = n_upstream.upstream
     end
     upstreams
   end
+
+  def get_upstream(access_owner=nil)
+    if upstream.nil? || !upstream.allow?(access_owner)
+      nil
+    else
+      upstream
+    end
+  end
+
+  def get_downstreams(access_owner=nil)
+    downstreams.filter {|n| n.allow? access_owner}
+  end
+
+  def flatten_downstreams(access_owner=nil, visted_works=[])
+    visted_works << self
+    downstreams_safe = (downstreams.select {|n| n.allow? access_owner}) - visted_works
+    if downstreams_safe.empty?
+      attributes_with_references(name_only: true, with_relationshiop: false)
+    else
+      attributes_with_references(name_only: true, with_relationshiop: false).merge(
+        children: downstreams_safe.map {|n| n.flatten_downstreams(access_owner, visted_works)}
+      )
+    end
+  end
+
+private
+  def relationship(access_owner=nil)
+    {
+      id: id,
+      upstream: (get_upstream(access_owner).name rescue nil),
+      upstream_id: (get_upstream(access_owner).id rescue nil),
+      upstreams_size: get_upstreams(access_owner).size,
+      downstreams_size: get_downstreams(access_owner).size
+    }
+  end
+
 end

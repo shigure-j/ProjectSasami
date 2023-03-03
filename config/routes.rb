@@ -8,11 +8,13 @@ Rails.application.routes.draw do
   resources :works, only: [:new, :create, :show]
   get "data/summary", to: "works#get_summary"
   get "data/work", to: "works#get_work"
+  get "data/chart", to: "works#get_chart"
   get "data/edit", to: "works#edit"
   get "data/delete", to: "works#delete"
   get "export", to: "works#export"
   get "detail", to: "dashboard#detail"
   get "summary", to: "dashboard#summary"
+  get "chart", to: "dashboard#chart"
   #get "statistic", to: "dashboard#statistic"
 
   get  "login",  to: 'owner_sessions#new', :as => :login

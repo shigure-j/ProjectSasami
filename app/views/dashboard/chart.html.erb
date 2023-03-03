@@ -15,12 +15,11 @@
         <div class="btn-group" role="group">
           <button onclick="loadWork(0, 1)" type="button" class="btn btn-secondary btn-lg" title="Show"><i class="bi bi-eye"></i></button>
           <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal" data-bs-target="#editModal" title="Edit"><i class="bi bi-pencil-square"></i></button>
-          <button onclick="loadWork(0, 0, 1)" type="button" class="btn btn-secondary btn-lg" title="Chart"><i class="bi bi-diagram-3-fill"></i></button>
         </div>
       </div>
       <div class="col buttons-toolbar d-flex justify-content-end gx-2 mx-2"></div>
     </div>
-    <%= render partial: "summary", locals: {format: @format, data_param: @data_param} %>
+    <div id="chart_box"></div>
   </div>
 </div>
 

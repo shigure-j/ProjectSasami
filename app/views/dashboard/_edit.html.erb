@@ -66,6 +66,12 @@
 <script>
   document.getElementById('editResultModal').addEventListener('hide.bs.modal', event => {
     //window.location.reload()
-    $("#dashboard_view").bootstrapTable("refresh")
+    if ($("#chart_box").size() != 0) {
+        $.get("/data/chart?" + document.URL.split("?")[1]).then(data => {
+            initChart(data)
+        })
+    } else {
+      $("#dashboard_view").bootstrapTable("refresh")
+    }
   })
 </script>

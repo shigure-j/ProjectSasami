@@ -31,5 +31,10 @@ window.onpageshow = function() {
             $("#current_button").removeClass("active")
         })
     }
+    if ($("#chart_box").size() != 0) {
+        $.get("/data/chart?" + document.URL.split("?")[1]).then(data => {
+            initChart(data)
+        })
+    }
     switchSummaryFlag = 0
 }

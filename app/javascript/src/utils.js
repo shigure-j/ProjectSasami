@@ -115,8 +115,11 @@ window.replaceParamVal = function(paramName,replaceWith) {
 }
 
 window.editWork = function() {
-  $table = $('#dashboard_view')
-  work_ids = $table.bootstrapTable('getSelections').map(function(row) {return row.id})
+  if ($("#chart_box").size() !== 0) {
+    var work_ids = getChartSelected()
+  } else {
+    var work_ids = getSummarySelected(0)
+  }
   switch($("input[name='edit_option']:checked").val()) {
     case "delete":
       $("#edit_result").attr("src", "/data/delete?works="+ work_ids.join(","))
@@ -236,7 +239,7 @@ window.changeSub = function(sub) {
   $.get("/data/work?" + this.location.href.split("?")[1]).then(detailTable)
 }
 
-window.loadWork = function(incr, redirect) {
+window.getSummarySelected = function(incr) {
   $table = $('#dashboard_view')
   org_ids = []
   if (incr) {
@@ -249,12 +252,22 @@ window.loadWork = function(incr, redirect) {
   }
   selected_works = $table.bootstrapTable('getSelections').map(row => {return row.id})
   if (incr == 2) {
-    work_ids = org_ids.filter(i => selected_works.indexOf(i) == -1)
+    return org_ids.filter(i => selected_works.indexOf(i) == -1)
   } else {
-    work_ids = org_ids.concat(selected_works)
+    return org_ids.concat(selected_works)
+  }
+}
+
+window.loadWork = function(incr, redirect, chart) {
+  if ($("#chart_box").size() !== 0) {
+    var work_ids = getChartSelected()
+  } else {
+    var work_ids = getSummarySelected(incr)
   }
   if (redirect) {
     window.location.href="/detail?works=" + work_ids.join(",")
+  } else if (chart) {
+    window.location.href="/chart?works=" + work_ids.join(",")
   } else {
     replaceParamVal("works", work_ids.join(","))
     $table.bootstrapTable("uncheckAll")
@@ -286,6 +299,38 @@ window.modalView = function(content) {
   //myModalAlternative.addEventListener('shown.bs.modal', () => {
   //  myInput.focus()
   //})
+}
+
+window.nodeTemplate = function(data) {
+  return `
+    <div onclick="chartSelect(this)">
+      <div class="title bg-info">${data.stage}</div>
+      <div class="content" style="border: 0px">${data.name}</div>
+    </div>
+  `
+}
+
+window.initChart = function(data) {
+  $box = $("#chart_box")
+  $box.empty()
+  $box.orgchart({
+    data: data,
+    direction: "l2r",
+    parentNodeSymbol: "",
+    nodeTemplate: nodeTemplate,
+    pan: true,
+    zoom: true
+  })
+  $('.orgchart').addClass('noncollapsable');
+}
+
+window.chartSelect = function(obj) {
+  var $content = $(obj).children(".content")
+  $content.toggleClass("bg-primary text-light chart-work-selected")
+}
+
+window.getChartSelected = function() {
+  return $(".chart-work-selected").parent("div").parent(".node").map((i, obj) => {return obj.id}).toArray()
 }
 
 window.detailTable = function(data) {

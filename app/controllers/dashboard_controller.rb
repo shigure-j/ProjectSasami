@@ -8,6 +8,9 @@ class DashboardController < ApplicationController
     @works  = (Work.filter_by_owner(logged_in? ? current_user : nil)[-7..-1] || []).reverse
   end
 
+  def chart
+  end
+
   def summary
     @format = Format.find_by(name: :work).get_format
     @filter_data = filter_data
