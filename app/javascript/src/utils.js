@@ -305,7 +305,7 @@ window.nodeTemplate = function(data) {
   return `
     <div onclick="chartSelect(this)">
       <div class="title bg-info">${data.stage}</div>
-      <div class="content" style="border: 0px">${data.name}</div>
+      <div class="content text-truncate" style="border: 0px">${data.name}</div>
     </div>
   `
 }

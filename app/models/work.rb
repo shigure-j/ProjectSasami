@@ -226,7 +226,7 @@ class Work < ApplicationRecord
 
   def self.merge_chart(works: [], access_owner: nil)
     head_works =  works.map do |work|
-      (work.get_upstreams(access_owner) << work).first
+      work.get_upstreams(access_owner).last || work
     end.uniq
 
     designs = {}
@@ -319,7 +319,7 @@ class Work < ApplicationRecord
 
   def flatten_downstreams(access_owner=nil, visted_works=[])
     visted_works << self
-    downstreams_safe = (downstreams.select {|n| n.allow? access_owner}) - visted_works
+    downstreams_safe = get_downstreams(access_owner) - visted_works
     if downstreams_safe.empty?
       attributes_with_references(name_only: true, with_relationshiop: false)
     else
