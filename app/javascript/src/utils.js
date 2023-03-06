@@ -267,7 +267,11 @@ window.loadWork = function(incr, redirect, chart) {
   if (redirect) {
     window.location.href="/detail?works=" + work_ids.join(",")
   } else if (chart) {
-    window.location.href="/chart?works=" + work_ids.join(",")
+    if (work_ids.length > 0) {
+      window.location.href="/chart?works=" + work_ids.join(",")
+    } else {
+      window.location.href="/chart"
+    }
   } else {
     replaceParamVal("works", work_ids.join(","))
     $table.bootstrapTable("uncheckAll")
