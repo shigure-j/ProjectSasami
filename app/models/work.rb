@@ -224,10 +224,14 @@ class Work < ApplicationRecord
     }
   end
 
-  def self.merge_chart(works: [], access_owner: nil)
-    head_works =  works.map do |work|
-      work.get_upstreams(access_owner).last || work
-    end.uniq
+  def self.merge_chart(works: [], access_owner: nil, max_level: Float::INFINITY, direct: false)
+    head_works =  if direct
+                    works
+                  else
+                    works.map do |work|
+                      work.get_upstreams(access_owner).last || work
+                    end.uniq
+                  end
 
     designs = {}
     projects = {}
@@ -236,9 +240,10 @@ class Work < ApplicationRecord
       designs[design] = {
         name: design.name,
         stage: :design,
+        id: design.id,
         children: []
       } unless designs.key? design
-      designs[design][:children] << work.flatten_downstreams(access_owner)
+      designs[design][:children] << work.flatten_downstreams(access_owner, [], max_level) if max_level.positive?
     end
 
     designs.each do |design, design_content|
@@ -246,17 +251,18 @@ class Work < ApplicationRecord
       projects[project] = {
         name: project.name,
         stage: :project,
+        id: project.id,
         children: []
       } unless projects.key? project
       projects[project][:children] << design_content
     end
 
-    if projects.size.eql? 1
+    if false && projects.size.eql?(1)
       projects.values.first
     else
       {
-        name: "",
-        stage: "",
+        name: '',
+        stage: '<i class="bi bi-diagram-3-fill"></i>'.html_safe,
         children: projects.values
       }
     end
@@ -317,14 +323,14 @@ class Work < ApplicationRecord
     downstreams.filter {|n| n.allow? access_owner}
   end
 
-  def flatten_downstreams(access_owner=nil, visted_works=[])
+  def flatten_downstreams(access_owner=nil, visted_works=[], max_level=Float::INFINITY)
     visted_works << self
     downstreams_safe = get_downstreams(access_owner) - visted_works
-    if downstreams_safe.empty?
+    if downstreams_safe.empty? || (max_level <= 1)
       attributes_with_references(name_only: true, with_relationshiop: false)
     else
       attributes_with_references(name_only: true, with_relationshiop: false).merge(
-        children: downstreams_safe.map {|n| n.flatten_downstreams(access_owner, visted_works)}
+        children: downstreams_safe.map {|n| n.flatten_downstreams(access_owner, visted_works, (max_level - 1))}
       )
     end
   end

@@ -302,9 +302,18 @@ window.modalView = function(content) {
 }
 
 window.nodeTemplate = function(data) {
+  var title_class = 'bg-primary'
+  switch (data.stage) {
+    case 'project':
+      title_class = 'bg-info-subtle'
+      break
+    case 'design':
+      title_class = 'bg-info'
+      break
+  }
   return `
     <div onclick="chartSelect(this)">
-      <div class="title bg-info">${data.stage}</div>
+      <div class="title ${title_class}">${data.stage}</div>
       <div class="content text-truncate" style="border: 0px">${data.name}</div>
     </div>
   `
@@ -325,8 +334,22 @@ window.initChart = function(data) {
 }
 
 window.chartSelect = function(obj) {
-  var $content = $(obj).children(".content")
-  $content.toggleClass("bg-primary text-light chart-work-selected")
+  var type = $(obj).children(".title").text()
+  switch (type) {
+    case '':
+      window.location.href="/chart"
+      break
+    case 'project':
+      window.location.href="/chart?project=" + $(obj).parent().attr("id")
+      break
+    case 'design':
+      window.location.href="/chart?design=" + $(obj).parent().attr("id")
+      break
+    default:
+      var $content = $(obj).children(".content")
+      $content.toggleClass("bg-primary text-light chart-work-selected")
+      break
+  }
 }
 
 window.getChartSelected = function() {
