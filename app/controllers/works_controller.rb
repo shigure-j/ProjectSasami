@@ -65,19 +65,26 @@ class WorksController < ApplicationController
     @works = []
     max_level = Float::INFINITY
     direct = true
+    incr = false
     if !params[:project].nil?
       project = Project.find_by id: params[:project]
       max_level = 0
       @works = project.designs.map {|n| n.works.first}.select {|n| !n.nil?} unless project.nil?
     elsif !params[:design].nil?
       design = Design.find_by id: params[:design]
+      incr = :design if params[:incr]
       max_level = 1
       @works = design.works.select {|n| n.upstream_id.nil?} unless design.nil?
     elsif !params[:works].nil?
       begin
         @works = Work.filter_by_owner(logged_in? ? current_user : nil).find params[:works].split(",")
       end
-      direct = false
+      if params[:incr]
+        direct = true
+        incr = :work
+      else
+        direct = false
+      end
     else
       max_level = 0
       Project.all.each do |project|
@@ -95,7 +102,8 @@ class WorksController < ApplicationController
       works: @works,
       access_owner: current_user,
       max_level: max_level,
-      direct: direct
+      direct: direct,
+      incr: incr
     )
     # Response
     respond_to do |res|

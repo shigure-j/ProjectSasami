@@ -224,7 +224,7 @@ class Work < ApplicationRecord
     }
   end
 
-  def self.merge_chart(works: [], access_owner: nil, max_level: Float::INFINITY, direct: false)
+  def self.merge_chart(works: [], access_owner: nil, max_level: Float::INFINITY, direct: false, incr: false)
     head_works =  if direct
                     works
                   else
@@ -232,6 +232,17 @@ class Work < ApplicationRecord
                       work.get_upstreams(access_owner).last || work
                     end.uniq
                   end
+
+    case incr
+    when :work
+      return works.map do |work|
+        [work.id, work.flatten_downstreams(access_owner, [], max_level)[:children]]
+      end.to_h
+    when :design
+      return works.map do |work|
+        work.flatten_downstreams(access_owner, [], max_level)
+      end
+    end
 
     designs = {}
     projects = {}
@@ -241,7 +252,8 @@ class Work < ApplicationRecord
         name: design.name,
         stage: :design,
         id: design.id,
-        children: []
+        children: [],
+        expand: !max_level.positive?
       } unless designs.key? design
       designs[design][:children] << work.flatten_downstreams(access_owner, [], max_level) if max_level.positive?
     end
@@ -326,8 +338,12 @@ class Work < ApplicationRecord
   def flatten_downstreams(access_owner=nil, visted_works=[], max_level=Float::INFINITY)
     visted_works << self
     downstreams_safe = get_downstreams(access_owner) - visted_works
-    if downstreams_safe.empty? || (max_level <= 1)
+    if downstreams_safe.empty?
       attributes_with_references(name_only: true, with_relationshiop: false)
+    elsif max_level <= 1
+      attributes_with_references(name_only: true, with_relationshiop: false).merge(
+        expand: true
+      )
     else
       attributes_with_references(name_only: true, with_relationshiop: false).merge(
         children: downstreams_safe.map {|n| n.flatten_downstreams(access_owner, visted_works, (max_level - 1))}

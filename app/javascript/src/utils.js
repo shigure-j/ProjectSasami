@@ -305,6 +305,40 @@ window.modalView = function(content) {
   //})
 }
 
+window.createNode = function($node, data) {
+  var id = data.id
+  if (data.stage == 'design') {
+    var prefix = 'expand_chart_design_'
+    var url = "/data/chart?incr=1&design="
+    var design_flag = true
+  } else {
+    var prefix = 'expand_chart_work_'
+    var url = "/data/chart?incr=1&works="
+    var design_flag = false
+  }
+  var secondMenuIcon = $('<i>', {
+    'id': prefix + id,
+    'class': 'bi bi-plus-circle-fill',
+    'style': "position: absolute;right: 35px;bottom: -10px;z-index: 2;",
+    click: function() {
+      $.get(url + id).then(res => {
+        if (design_flag) {
+          res_data = res
+        } else {
+          res_data = res[id]
+        }
+        if (res_data !== undefined && res_data !== null) {
+          $chart.addChildren($node, res_data)
+        }
+      })
+      $("#" + prefix + id).remove()
+    }
+  });
+  if (data.expand) {
+    $node.append(secondMenuIcon)
+  }
+}
+
 window.nodeTemplate = function(data) {
   var title_class = 'bg-primary'
   switch (data.stage) {
@@ -326,11 +360,12 @@ window.nodeTemplate = function(data) {
 window.initChart = function(data) {
   $box = $("#chart_box")
   $box.empty()
-  $box.orgchart({
+  $chart = $box.orgchart({
     data: data,
     direction: "l2r",
     parentNodeSymbol: "",
     nodeTemplate: nodeTemplate,
+    createNode: createNode,
     pan: true,
     zoom: true
   })
