@@ -426,7 +426,7 @@ class WorksController < ApplicationController
                   name = objs.fetch(n[:sortName]) {n[:sortName]}
                   [name, n[:sortOrder].eql?("desc")]
                 end.to_h
-              elsif !params[:sort].nil?
+              elsif !params[:sort].blank?
                 name = objs.fetch(params[:sort]) {params[:sort]}
                 { name => params[:order].eql?("desc") }
               else
