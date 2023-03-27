@@ -8,7 +8,7 @@ module ApplicationCable
 
   private
     def get_current_user
-      Owner.find_by id: cookies.signed[:owner_id]
+      Owner.find_by id: cookies.encrypted[:owner_id]
     end
   end
 end

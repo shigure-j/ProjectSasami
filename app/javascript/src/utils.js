@@ -357,8 +357,8 @@ window.nodeTemplate = function(data) {
       var fmt_date = date.format("yyyy/MM/dd HH:mm")
       var content = `
         <p class='bi my-1 bi-list-ol'> ${data.id}</p>
-        <p class='bi my-1 bi-people-fill'> ${data.owner}</p>
-        <p class='bi my-1 bi-clock-fill'> ${fmt_date}</p>
+        <p class='bi my-1 bi-person'> ${data.owner}</p>
+        <p class='bi my-1 bi-clock'> ${fmt_date}</p>
       `
       extra = `class="focus-popover" data-bs-toggle="popover" data-bs-html="true" data-bs-title="${data.name}" data-bs-content="${content}"`
       break
